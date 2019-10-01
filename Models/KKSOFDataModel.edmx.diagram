@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="53804559861748c6867e55b8b89f4963" Name="Diagram1" ZoomLevel="93">
+        <EntityTypeShape EntityType="KKSOFModel.Citizen_FollowUps" Width="1.5" PointX="3" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="KKSOFModel.Citizen_Notes" Width="1.5" PointX="6" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="KKSOFModel.Security_Citizens" Width="1.5" PointX="0.75" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="KKSOFModel.Security_User" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="KKSOFModel.FK__Citizen_F__Citiz__2E1BDC42" ManuallyRouted="false" />
+        <AssociationConnector Association="KKSOFModel.FK__Citizen_F__Log_U__2D27B809" ManuallyRouted="false" />
+        <AssociationConnector Association="KKSOFModel.FK__Citizen_F__Statu__2F10007B" ManuallyRouted="false" />
+        <AssociationConnector Association="KKSOFModel.FK__StatusNot__Citiz__29572725" ManuallyRouted="false" />
+        <AssociationConnector Association="KKSOFModel.FK__StatusNot__Log_U__286302EC" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="KKSOFModel.Citizen_BackgroundInformation" Width="1.5" PointX="3" PointY="0.75" />
+        <EntityTypeShape EntityType="KKSOFModel.Deadline" Width="1.5" PointX="6" PointY="0.875" />
+        <EntityTypeShape EntityType="KKSOFModel.Message" Width="1.5" PointX="3" PointY="10.25" />
+        <AssociationConnector Association="KKSOFModel.FK__Citizen_B__Citiz__3D5E1FD2" />
+        <AssociationConnector Association="KKSOFModel.FK__Citizen_B__Log_U__3C69FB99" />
+        <AssociationConnector Association="KKSOFModel.FK__Citizen_N__Follo__34C8D9D1" />
+        <AssociationConnector Association="KKSOFModel.FK__Deadlines__Citiz__38996AB5" />
+        <AssociationConnector Association="KKSOFModel.FK__Deadlines__Compl__398D8EEE" />
+        <AssociationConnector Association="KKSOFModel.FK__Deadlines__Log_U__37A5467C" />
+        <AssociationConnector Association="KKSOFModel.FK__Messages__Citize__412EB0B6" />
+        <AssociationConnector Association="KKSOFModel.FK__Messages__Delete__403A8C7D" />
+        <EntityTypeShape EntityType="KKSOFModel.Document" Width="1.5" PointX="8.25" PointY="2.875" />
+        <AssociationConnector Association="KKSOFModel.FK__Followup___Follo__32E0915F" />
+        <AssociationConnector Association="KKSOFModel.FK__Followup___Citiz__33D4B598" />
+        <AssociationConnector Association="KKSOFModel.FK__Followup___Log_U__31EC6D26" />
+        <EntityTypeShape EntityType="KKSOFModel.CitizenstatusNoteMapping" Width="1.5" PointX="11.25" PointY="3.625" />
+        <AssociationConnector Association="KKSOFModel.FK__Citizenst__Statu__2EDAF651" />
+        <AssociationConnector Association="KKSOFModel.FK__Citizenst__UserI__2FCF1A8A" />
+        <EntityTypeShape EntityType="KKSOFModel.Citizen_FollowUpAttachments" Width="1.5" PointX="8.375" PointY="7.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

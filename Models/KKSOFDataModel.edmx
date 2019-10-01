@@ -1,0 +1,1499 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="KKSOFModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Citizen_BackgroundInformation">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Log_from" Type="datetime" Nullable="false" />
+          <Property Name="Log_UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CitizenId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="LifeHistory" Type="nvarchar(max)" />
+          <Property Name="Lifehistory_Lastupdate" Type="datetime" />
+          <Property Name="MedicalHistory" Type="nvarchar(max)" />
+          <Property Name="MedicalHistory_Lastupdate" Type="datetime" />
+          <Property Name="HealthInformation" Type="nvarchar(max)" />
+          <Property Name="HealthInformation_Lastupdate" Type="datetime" />
+          <Property Name="SchoolInformation" Type="nvarchar(max)" />
+          <Property Name="SchoolInformation_Lastupdate" Type="datetime" />
+          <Property Name="SocialInformation" Type="nvarchar(max)" />
+          <Property Name="SocialInformation_Lastupdate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Citizen_FollowUpAttachments">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Log_UserId" Type="uniqueidentifier" />
+          <Property Name="CitizenId" Type="uniqueidentifier" />
+          <Property Name="DocType" Type="varchar" MaxLength="100" />
+          <Property Name="Docname" Type="varchar" MaxLength="100" />
+          <Property Name="Objectid" Type="uniqueidentifier" />
+          <Property Name="FollowupId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Citizen_FollowUps">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Log_from" Type="datetime" Nullable="false" />
+          <Property Name="Log_UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CitizenId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="NextFollowupdate" Type="datetime" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Consent" Type="nvarchar(max)" />
+          <Property Name="CaseWorkerdescription" Type="nvarchar(max)" />
+          <Property Name="Deleted" Type="bit" Nullable="false" />
+          <Property Name="StatusNoteID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Result" Type="tinyint" />
+        </EntityType>
+        <EntityType Name="Citizen_Notes">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Log_from" Type="datetime" Nullable="false" />
+          <Property Name="Log_UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Score" Type="tinyint" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="CitizenId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Participants" Type="nvarchar" MaxLength="200" />
+          <Property Name="SaveDraft" Type="bit" Nullable="false" />
+          <Property Name="Headline" Type="nvarchar" MaxLength="100" />
+          <Property Name="Notetype" Type="tinyint" />
+          <Property Name="Deleted" Type="bit" Nullable="false" />
+          <Property Name="FollowupId" Type="uniqueidentifier" />
+        </EntityType>
+        <EntityType Name="CitizenstatusNoteMapping">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="StatusNoteId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Deadlines">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Log_from" Type="datetime" Nullable="false" />
+          <Property Name="Log_UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CitizenId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar(max)" />
+          <Property Name="DeadlineOwnertype" Type="tinyint" Nullable="false" />
+          <Property Name="DeadlineState" Type="tinyint" Nullable="false" />
+          <Property Name="DeadlineColorEnum" Type="tinyint" Nullable="false" />
+          <Property Name="DeadlineDate" Type="datetime" />
+          <Property Name="CompletedDate" Type="datetime" />
+          <Property Name="Completedby" Type="uniqueidentifier" />
+          <Property Name="Deleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Documents">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Log_from" Type="datetime" Nullable="false" />
+          <Property Name="Log_UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="DocumentType" Type="tinyint" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" />
+          <Property Name="DocURL" Type="nvarchar" MaxLength="512" />
+          <Property Name="FollowupID" Type="uniqueidentifier" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Deleted" Type="bit" Nullable="false" />
+          <Property Name="CitizenId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Messages">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Log_from" Type="datetime" Nullable="false" />
+          <Property Name="Log_UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CitizenId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="200" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Status" Type="tinyint" Nullable="false" />
+          <Property Name="Deleted" Type="bit" Nullable="false" />
+          <Property Name="recipient" Type="uniqueidentifier" />
+          <Property Name="MessageType" Type="varchar" MaxLength="255" />
+          <Property Name="MessageStatus" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Security_Citizens">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Firstname" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Lastname" Type="nvarchar" MaxLength="100" />
+          <Property Name="PersonalIdNo" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Log_from" Type="datetime" Nullable="false" />
+          <Property Name="Gender" Type="tinyint" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="100" />
+          <Property Name="City" Type="nvarchar" MaxLength="100" />
+          <Property Name="Dateofbirth" Type="datetime" Nullable="false" />
+          <Property Name="Profession" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="Security_User">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="60" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="60" />
+          <Property Name="Createdtimestamp" Type="datetime" Nullable="false" />
+          <Property Name="Usertype" Type="tinyint" Nullable="false" />
+          <Property Name="Firstname" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Lastname" Type="nvarchar" MaxLength="100" />
+          <Property Name="Profession" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <Association Name="FK__Citizen_B__Citiz__114A936A">
+          <End Role="Security_Citizens" Type="Self.Security_Citizens" Multiplicity="1" />
+          <End Role="Citizen_BackgroundInformation" Type="Self.Citizen_BackgroundInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_BackgroundInformation">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_B__Log_U__123EB7A3">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="Citizen_BackgroundInformation" Type="Self.Citizen_BackgroundInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_BackgroundInformation">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_F__Citiz__1332DBDC">
+          <End Role="Security_Citizens" Type="Self.Security_Citizens" Multiplicity="1" />
+          <End Role="Citizen_FollowUps" Type="Self.Citizen_FollowUps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_FollowUps">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_F__Log_U__14270015">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="Citizen_FollowUps" Type="Self.Citizen_FollowUps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_FollowUps">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_F__Statu__32AB8735">
+          <End Role="Citizen_Notes" Type="Self.Citizen_Notes" Multiplicity="1" />
+          <End Role="Citizen_FollowUps" Type="Self.Citizen_FollowUps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citizen_Notes">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_FollowUps">
+              <PropertyRef Name="StatusNoteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_N__Citiz__17036CC0">
+          <End Role="Security_Citizens" Type="Self.Security_Citizens" Multiplicity="1" />
+          <End Role="Citizen_Notes" Type="Self.Citizen_Notes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_Notes">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_N__Follo__160F4887">
+          <End Role="Citizen_FollowUps" Type="Self.Citizen_FollowUps" Multiplicity="0..1" />
+          <End Role="Citizen_Notes" Type="Self.Citizen_Notes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citizen_FollowUps">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_Notes">
+              <PropertyRef Name="FollowupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_N__Log_U__17F790F9">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="Citizen_Notes" Type="Self.Citizen_Notes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_Notes">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizenst__Statu__2EDAF651">
+          <End Role="Citizen_Notes" Type="Self.Citizen_Notes" Multiplicity="1" />
+          <End Role="CitizenstatusNoteMapping" Type="Self.CitizenstatusNoteMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citizen_Notes">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="CitizenstatusNoteMapping">
+              <PropertyRef Name="StatusNoteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizenst__UserI__2FCF1A8A">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="CitizenstatusNoteMapping" Type="Self.CitizenstatusNoteMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="CitizenstatusNoteMapping">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Deadlines__Citiz__18EBB532">
+          <End Role="Security_Citizens" Type="Self.Security_Citizens" Multiplicity="1" />
+          <End Role="Deadlines" Type="Self.Deadlines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Deadlines">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Deadlines__Compl__19DFD96B">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="0..1" />
+          <End Role="Deadlines" Type="Self.Deadlines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Deadlines">
+              <PropertyRef Name="Completedby" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Deadlines__Log_U__1AD3FDA4">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="Deadlines" Type="Self.Deadlines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Deadlines">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Documents__Citiz__1BC821DD">
+          <End Role="Security_Citizens" Type="Self.Security_Citizens" Multiplicity="1" />
+          <End Role="Documents" Type="Self.Documents" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Documents">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Documents__Follo__1CBC4616">
+          <End Role="Citizen_FollowUps" Type="Self.Citizen_FollowUps" Multiplicity="0..1" />
+          <End Role="Documents" Type="Self.Documents" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citizen_FollowUps">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Documents">
+              <PropertyRef Name="FollowupID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Documents__Log_U__1DB06A4F">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="Documents" Type="Self.Documents" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Documents">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Messages__Citize__1EA48E88">
+          <End Role="Security_Citizens" Type="Self.Security_Citizens" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Messages__Log_Us__1F98B2C1">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="Get_CitizenbyGUID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="GET_CITIZENS" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Criteria" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="Get_FilteredCitizenMessages" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Fromdate" Type="datetime" Mode="In" />
+          <Parameter Name="Todate" Type="datetime" Mode="In" />
+          <Parameter Name="Type" Type="varchar" Mode="In" />
+          <Parameter Name="MessageStatus" Type="varchar" Mode="In" />
+          <Parameter Name="CitizenInfo" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="Text" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="CitizenId" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="Get_FilteredCitizenNotes" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Fromdate" Type="datetime" Mode="In" />
+          <Parameter Name="Todate" Type="datetime" Mode="In" />
+          <Parameter Name="DocType" Type="tinyint" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="NoteText" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="CitizenId" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="Get_FilteredDeadlines" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CitizenInfo" Type="nvarchar" Mode="In" />
+          <Parameter Name="IsRedDeadline" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="Get_FilteredMessages" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Fromdate" Type="datetime" Mode="In" />
+          <Parameter Name="Todate" Type="datetime" Mode="In" />
+          <Parameter Name="Type" Type="varchar" Mode="In" />
+          <Parameter Name="MessageStatus" Type="varchar" Mode="In" />
+          <Parameter Name="CitizenInfo" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="Text" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="Responsible" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="Get_FilteredNotes" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Fromdate" Type="datetime" Mode="In" />
+          <Parameter Name="Todate" Type="datetime" Mode="In" />
+          <Parameter Name="DocType" Type="tinyint" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="NoteText" Type="nvarchar(max)" Mode="In" />
+        </Function>
+        <EntityContainer Name="KKSOFModelStoreContainer">
+          <EntitySet Name="Citizen_BackgroundInformation" EntityType="Self.Citizen_BackgroundInformation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Citizen_FollowUpAttachments" EntityType="Self.Citizen_FollowUpAttachments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Citizen_FollowUps" EntityType="Self.Citizen_FollowUps" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Citizen_Notes" EntityType="Self.Citizen_Notes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CitizenstatusNoteMapping" EntityType="Self.CitizenstatusNoteMapping" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Deadlines" EntityType="Self.Deadlines" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Documents" EntityType="Self.Documents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Security_Citizens" EntityType="Self.Security_Citizens" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Security_User" EntityType="Self.Security_User" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Citizen_B__Citiz__114A936A" Association="Self.FK__Citizen_B__Citiz__114A936A">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Citizen_BackgroundInformation" EntitySet="Citizen_BackgroundInformation" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_B__Log_U__123EB7A3" Association="Self.FK__Citizen_B__Log_U__123EB7A3">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Citizen_BackgroundInformation" EntitySet="Citizen_BackgroundInformation" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_F__Citiz__1332DBDC" Association="Self.FK__Citizen_F__Citiz__1332DBDC">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_F__Log_U__14270015" Association="Self.FK__Citizen_F__Log_U__14270015">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_F__Statu__32AB8735" Association="Self.FK__Citizen_F__Statu__32AB8735">
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_N__Citiz__17036CC0" Association="Self.FK__Citizen_N__Citiz__17036CC0">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_N__Follo__160F4887" Association="Self.FK__Citizen_N__Follo__160F4887">
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_N__Log_U__17F790F9" Association="Self.FK__Citizen_N__Log_U__17F790F9">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizenst__Statu__2EDAF651" Association="Self.FK__Citizenst__Statu__2EDAF651">
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+            <End Role="CitizenstatusNoteMapping" EntitySet="CitizenstatusNoteMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizenst__UserI__2FCF1A8A" Association="Self.FK__Citizenst__UserI__2FCF1A8A">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="CitizenstatusNoteMapping" EntitySet="CitizenstatusNoteMapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Deadlines__Citiz__18EBB532" Association="Self.FK__Deadlines__Citiz__18EBB532">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Deadlines" EntitySet="Deadlines" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Deadlines__Compl__19DFD96B" Association="Self.FK__Deadlines__Compl__19DFD96B">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Deadlines" EntitySet="Deadlines" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Deadlines__Log_U__1AD3FDA4" Association="Self.FK__Deadlines__Log_U__1AD3FDA4">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Deadlines" EntitySet="Deadlines" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Documents__Citiz__1BC821DD" Association="Self.FK__Documents__Citiz__1BC821DD">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Documents" EntitySet="Documents" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Documents__Follo__1CBC4616" Association="Self.FK__Documents__Follo__1CBC4616">
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+            <End Role="Documents" EntitySet="Documents" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Documents__Log_U__1DB06A4F" Association="Self.FK__Documents__Log_U__1DB06A4F">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Documents" EntitySet="Documents" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Messages__Citize__1EA48E88" Association="Self.FK__Messages__Citize__1EA48E88">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Messages__Log_Us__1F98B2C1" Association="Self.FK__Messages__Log_Us__1F98B2C1">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="KKSOFModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Citizen_FollowUps">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_from" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_UserId" Type="Guid" Nullable="false" />
+          <Property Name="CitizenId" Type="Guid" Nullable="false" />
+          <Property Name="NextFollowupdate" Type="DateTime" Precision="3" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Consent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CaseWorkerdescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StatusNoteID" Type="Guid" Nullable="false" />
+          <Property Name="Result" Type="Byte" />
+          <Property Name="Deleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Security_Citizens" Relationship="Self.FK__Citizen_F__Citiz__2E1BDC42" FromRole="Citizen_FollowUps" ToRole="Security_Citizens" />
+          <NavigationProperty Name="Security_User" Relationship="Self.FK__Citizen_F__Log_U__2D27B809" FromRole="Citizen_FollowUps" ToRole="Security_User" />
+          <NavigationProperty Name="Citizen_Notes" Relationship="Self.FK__Citizen_F__Statu__2F10007B" FromRole="Citizen_FollowUps" ToRole="Citizen_Notes" />
+          <NavigationProperty Name="Citizen_Notes1" Relationship="KKSOFModel.FK__Citizen_N__Follo__34C8D9D1" FromRole="Citizen_FollowUps" ToRole="Citizen_Notes" />
+          <NavigationProperty Name="Documents" Relationship="KKSOFModel.FK__Followup___Follo__32E0915F" FromRole="Citizen_FollowUps" ToRole="Document" />
+        </EntityType>
+        <EntityType Name="Citizen_Notes">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_from" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_UserId" Type="Guid" Nullable="false" />
+          <Property Name="Score" Type="Byte" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CitizenId" Type="Guid" Nullable="false" />
+          <Property Name="Participants" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="SaveDraft" Type="Boolean" Nullable="false" />
+          <Property Name="Headline" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Notetype" Type="Byte" />
+          <Property Name="Deleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Citizen_FollowUps" Relationship="Self.FK__Citizen_F__Statu__2F10007B" FromRole="Citizen_Notes" ToRole="Citizen_FollowUps" />
+          <NavigationProperty Name="Security_Citizens" Relationship="Self.FK__StatusNot__Citiz__29572725" FromRole="Citizen_Notes" ToRole="Security_Citizens" />
+          <NavigationProperty Name="Security_User" Relationship="Self.FK__StatusNot__Log_U__286302EC" FromRole="Citizen_Notes" ToRole="Security_User" />
+          <Property Name="FollowupId" Type="Guid" />
+          <NavigationProperty Name="Citizen_FollowUps1" Relationship="KKSOFModel.FK__Citizen_N__Follo__34C8D9D1" FromRole="Citizen_Notes" ToRole="Citizen_FollowUps" />
+          <NavigationProperty Name="CitizenstatusNoteMappings" Relationship="KKSOFModel.FK__Citizenst__Statu__2EDAF651" FromRole="Citizen_Notes" ToRole="CitizenstatusNoteMapping" />
+        </EntityType>
+        <EntityType Name="Security_Citizens">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="Firstname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Lastname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PersonalIdNo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_from" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Gender" Type="Byte" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Dateofbirth" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Profession" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Citizen_FollowUps" Relationship="Self.FK__Citizen_F__Citiz__2E1BDC42" FromRole="Security_Citizens" ToRole="Citizen_FollowUps" />
+          <NavigationProperty Name="Citizen_Notes" Relationship="Self.FK__StatusNot__Citiz__29572725" FromRole="Security_Citizens" ToRole="Citizen_Notes" />
+          <NavigationProperty Name="Citizen_BackgroundInformation" Relationship="KKSOFModel.FK__Citizen_B__Citiz__3D5E1FD2" FromRole="Security_Citizens" ToRole="Citizen_BackgroundInformation" />
+          <NavigationProperty Name="Deadlines" Relationship="KKSOFModel.FK__Deadlines__Citiz__38996AB5" FromRole="Security_Citizens" ToRole="Deadline" />
+          <NavigationProperty Name="Messages" Relationship="KKSOFModel.FK__Messages__Citize__412EB0B6" FromRole="Security_Citizens" ToRole="Message" />
+          <NavigationProperty Name="Documents" Relationship="KKSOFModel.FK__Followup___Citiz__33D4B598" FromRole="Security_Citizens" ToRole="Document" />
+        </EntityType>
+        <EntityType Name="Security_User">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="UserId" Type="String" MaxLength="60" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Usertype" Type="Byte" Nullable="false" />
+          <Property Name="Firstname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Lastname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Profession" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Citizen_FollowUps" Relationship="Self.FK__Citizen_F__Log_U__2D27B809" FromRole="Security_User" ToRole="Citizen_FollowUps" />
+          <NavigationProperty Name="Citizen_Notes" Relationship="Self.FK__StatusNot__Log_U__286302EC" FromRole="Security_User" ToRole="Citizen_Notes" />
+          <NavigationProperty Name="Citizen_BackgroundInformation" Relationship="KKSOFModel.FK__Citizen_B__Log_U__3C69FB99" FromRole="Security_User" ToRole="Citizen_BackgroundInformation" />
+          <NavigationProperty Name="Deadlines" Relationship="KKSOFModel.FK__Deadlines__Compl__398D8EEE" FromRole="Security_User" ToRole="Deadline" />
+          <NavigationProperty Name="Deadlines1" Relationship="KKSOFModel.FK__Deadlines__Log_U__37A5467C" FromRole="Security_User" ToRole="Deadline" />
+          <NavigationProperty Name="Messages" Relationship="KKSOFModel.FK__Messages__Delete__403A8C7D" FromRole="Security_User" ToRole="Message" />
+          <NavigationProperty Name="Documents" Relationship="KKSOFModel.FK__Followup___Log_U__31EC6D26" FromRole="Security_User" ToRole="Document" />
+          <NavigationProperty Name="CitizenstatusNoteMappings" Relationship="KKSOFModel.FK__Citizenst__UserI__2FCF1A8A" FromRole="Security_User" ToRole="CitizenstatusNoteMapping" />
+        </EntityType>
+        <Association Name="FK__Citizen_F__Citiz__2E1BDC42">
+          <End Role="Security_Citizens" Type="Self.Security_Citizens" Multiplicity="1" />
+          <End Role="Citizen_FollowUps" Type="Self.Citizen_FollowUps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_FollowUps">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_F__Log_U__2D27B809">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="Citizen_FollowUps" Type="Self.Citizen_FollowUps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_FollowUps">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_F__Statu__2F10007B">
+          <End Role="Citizen_Notes" Type="Self.Citizen_Notes" Multiplicity="1" />
+          <End Role="Citizen_FollowUps" Type="Self.Citizen_FollowUps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citizen_Notes">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_FollowUps">
+              <PropertyRef Name="StatusNoteID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__StatusNot__Citiz__29572725">
+          <End Role="Security_Citizens" Type="Self.Security_Citizens" Multiplicity="1" />
+          <End Role="Citizen_Notes" Type="Self.Citizen_Notes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_Notes">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__StatusNot__Log_U__286302EC">
+          <End Role="Security_User" Type="Self.Security_User" Multiplicity="1" />
+          <End Role="Citizen_Notes" Type="Self.Citizen_Notes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_Notes">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="KKSOFDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Citizen_FollowUps" EntityType="Self.Citizen_FollowUps" />
+          <EntitySet Name="Citizen_Notes" EntityType="Self.Citizen_Notes" />
+          <EntitySet Name="Security_Citizens" EntityType="Self.Security_Citizens" />
+          <EntitySet Name="Security_User" EntityType="Self.Security_User" />
+          <AssociationSet Name="FK__Citizen_F__Citiz__2E1BDC42" Association="Self.FK__Citizen_F__Citiz__2E1BDC42">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_F__Log_U__2D27B809" Association="Self.FK__Citizen_F__Log_U__2D27B809">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_F__Statu__2F10007B" Association="Self.FK__Citizen_F__Statu__2F10007B">
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+          </AssociationSet>
+          <AssociationSet Name="FK__StatusNot__Citiz__29572725" Association="Self.FK__StatusNot__Citiz__29572725">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__StatusNot__Log_U__286302EC" Association="Self.FK__StatusNot__Log_U__286302EC">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+          </AssociationSet>
+          <EntitySet Name="Citizen_BackgroundInformation" EntityType="KKSOFModel.Citizen_BackgroundInformation" />
+          <EntitySet Name="Deadlines" EntityType="KKSOFModel.Deadline" />
+          <EntitySet Name="Messages" EntityType="KKSOFModel.Message" />
+          <AssociationSet Name="FK__Citizen_B__Citiz__3D5E1FD2" Association="KKSOFModel.FK__Citizen_B__Citiz__3D5E1FD2">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Citizen_BackgroundInformation" EntitySet="Citizen_BackgroundInformation" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_B__Log_U__3C69FB99" Association="KKSOFModel.FK__Citizen_B__Log_U__3C69FB99">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Citizen_BackgroundInformation" EntitySet="Citizen_BackgroundInformation" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizen_N__Follo__34C8D9D1" Association="KKSOFModel.FK__Citizen_N__Follo__34C8D9D1">
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Deadlines__Citiz__38996AB5" Association="KKSOFModel.FK__Deadlines__Citiz__38996AB5">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Deadline" EntitySet="Deadlines" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Deadlines__Compl__398D8EEE" Association="KKSOFModel.FK__Deadlines__Compl__398D8EEE">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Deadline" EntitySet="Deadlines" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Deadlines__Log_U__37A5467C" Association="KKSOFModel.FK__Deadlines__Log_U__37A5467C">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Deadline" EntitySet="Deadlines" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Messages__Citize__412EB0B6" Association="KKSOFModel.FK__Messages__Citize__412EB0B6">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Messages__Delete__403A8C7D" Association="KKSOFModel.FK__Messages__Delete__403A8C7D">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <FunctionImport Name="GET_CITIZENS" ReturnType="Collection(KKSOFModel.GET_CITIZENS_Result)">
+          <Parameter Name="Criteria" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="Documents" EntityType="KKSOFModel.Document" />
+          <AssociationSet Name="FK__Followup___Follo__32E0915F" Association="KKSOFModel.FK__Followup___Follo__32E0915F">
+            <End Role="Citizen_FollowUps" EntitySet="Citizen_FollowUps" />
+            <End Role="Document" EntitySet="Documents" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Followup___Citiz__33D4B598" Association="KKSOFModel.FK__Followup___Citiz__33D4B598">
+            <End Role="Security_Citizens" EntitySet="Security_Citizens" />
+            <End Role="Document" EntitySet="Documents" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Followup___Log_U__31EC6D26" Association="KKSOFModel.FK__Followup___Log_U__31EC6D26">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="Document" EntitySet="Documents" />
+          </AssociationSet>
+          <FunctionImport Name="Get_FilteredNotes" ReturnType="Collection(KKSOFModel.Get_FilteredNotes_Result)">
+            <Parameter Name="Fromdate" Mode="In" Type="DateTime" />
+            <Parameter Name="Todate" Mode="In" Type="DateTime" />
+            <Parameter Name="DocType" Mode="In" Type="Byte" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
+            <Parameter Name="NoteText" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Get_FilteredCitizenNotes" ReturnType="Collection(KKSOFModel.Get_FilteredCitizenNotes_Result)">
+            <Parameter Name="Fromdate" Mode="In" Type="DateTime" />
+            <Parameter Name="Todate" Mode="In" Type="DateTime" />
+            <Parameter Name="DocType" Mode="In" Type="Byte" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="UserId" Mode="In" Type="Guid" />
+            <Parameter Name="NoteText" Mode="In" Type="String" />
+            <Parameter Name="CitizenId" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="Get_FilteredMessages" ReturnType="Collection(KKSOFModel.Get_FilteredMessages_Result)">
+            <Parameter Name="Fromdate" Mode="In" Type="DateTime" />
+            <Parameter Name="Todate" Mode="In" Type="DateTime" />
+            <Parameter Name="Type" Mode="In" Type="String" />
+            <Parameter Name="MessageStatus" Mode="In" Type="String" />
+            <Parameter Name="CitizenInfo" Mode="In" Type="String" />
+            <Parameter Name="Text" Mode="In" Type="String" />
+            <Parameter Name="Responsible" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="Get_FilteredCitizenMessages" ReturnType="Collection(KKSOFModel.Get_FilteredCitizenMessages_Result)">
+            <Parameter Name="Fromdate" Mode="In" Type="DateTime" />
+            <Parameter Name="Todate" Mode="In" Type="DateTime" />
+            <Parameter Name="Type" Mode="In" Type="String" />
+            <Parameter Name="MessageStatus" Mode="In" Type="String" />
+            <Parameter Name="CitizenInfo" Mode="In" Type="String" />
+            <Parameter Name="Text" Mode="In" Type="String" />
+            <Parameter Name="CitizenId" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="Get_FilteredDeadlines" ReturnType="Collection(KKSOFModel.Get_FilteredDeadlines_Result)">
+            <Parameter Name="CitizenInfo" Mode="In" Type="String" />
+            <Parameter Name="IsRedDeadline" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <EntitySet Name="CitizenstatusNoteMappings" EntityType="KKSOFModel.CitizenstatusNoteMapping" />
+          <AssociationSet Name="FK__Citizenst__Statu__2EDAF651" Association="KKSOFModel.FK__Citizenst__Statu__2EDAF651">
+            <End Role="Citizen_Notes" EntitySet="Citizen_Notes" />
+            <End Role="CitizenstatusNoteMapping" EntitySet="CitizenstatusNoteMappings" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Citizenst__UserI__2FCF1A8A" Association="KKSOFModel.FK__Citizenst__UserI__2FCF1A8A">
+            <End Role="Security_User" EntitySet="Security_User" />
+            <End Role="CitizenstatusNoteMapping" EntitySet="CitizenstatusNoteMappings" />
+          </AssociationSet>
+          <EntitySet Name="Citizen_FollowUpAttachments" EntityType="KKSOFModel.Citizen_FollowUpAttachments" />
+          <FunctionImport Name="Get_CitizenbyGUID" ReturnType="Collection(KKSOFModel.Get_CitizenbyGUID_Result)">
+          <Parameter Name="id" Mode="In" Type="Guid" />
+          </FunctionImport>
+        </EntityContainer>
+        <EntityType Name="Citizen_BackgroundInformation">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_from" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_UserId" Type="Guid" Nullable="false" />
+          <Property Name="CitizenId" Type="Guid" Nullable="false" />
+          <Property Name="LifeHistory" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Lifehistory_Lastupdate" Type="DateTime" Precision="3" />
+          <Property Name="MedicalHistory" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MedicalHistory_Lastupdate" Type="DateTime" Precision="3" />
+          <Property Name="HealthInformation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="HealthInformation_Lastupdate" Type="DateTime" Precision="3" />
+          <Property Name="SchoolInformation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SchoolInformation_Lastupdate" Type="DateTime" Precision="3" />
+          <Property Name="SocialInformation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SocialInformation_Lastupdate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Security_Citizens" Relationship="KKSOFModel.FK__Citizen_B__Citiz__3D5E1FD2" FromRole="Citizen_BackgroundInformation" ToRole="Security_Citizens" />
+          <NavigationProperty Name="Security_User" Relationship="KKSOFModel.FK__Citizen_B__Log_U__3C69FB99" FromRole="Citizen_BackgroundInformation" ToRole="Security_User" />
+        </EntityType>
+        <EntityType Name="Deadline">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_from" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_UserId" Type="Guid" Nullable="false" />
+          <Property Name="CitizenId" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DeadlineOwnertype" Type="Byte" Nullable="false" />
+          <Property Name="DeadlineState" Type="Byte" Nullable="false" />
+          <Property Name="DeadlineColorEnum" Type="Byte" Nullable="false" />
+          <Property Name="DeadlineDate" Type="DateTime" Precision="3" />
+          <Property Name="CompletedDate" Type="DateTime" Precision="3" />
+          <Property Name="Completedby" Type="Guid" />
+          <Property Name="Deleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Security_Citizens" Relationship="KKSOFModel.FK__Deadlines__Citiz__38996AB5" FromRole="Deadline" ToRole="Security_Citizens" />
+          <NavigationProperty Name="Security_User" Relationship="KKSOFModel.FK__Deadlines__Compl__398D8EEE" FromRole="Deadline" ToRole="Security_User" />
+          <NavigationProperty Name="Security_User1" Relationship="KKSOFModel.FK__Deadlines__Log_U__37A5467C" FromRole="Deadline" ToRole="Security_User" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_from" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_UserId" Type="Guid" Nullable="false" />
+          <Property Name="CitizenId" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Byte" Nullable="false" />
+          <Property Name="Deleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Security_Citizens" Relationship="KKSOFModel.FK__Messages__Citize__412EB0B6" FromRole="Message" ToRole="Security_Citizens" />
+          <NavigationProperty Name="Security_User" Relationship="KKSOFModel.FK__Messages__Delete__403A8C7D" FromRole="Message" ToRole="Security_User" />
+          <Property Name="recipient" Type="Guid" />
+          <Property Name="MessageType" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="MessageStatus" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK__Citizen_B__Citiz__3D5E1FD2">
+          <End Type="KKSOFModel.Security_Citizens" Role="Security_Citizens" Multiplicity="1" />
+          <End Type="KKSOFModel.Citizen_BackgroundInformation" Role="Citizen_BackgroundInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_BackgroundInformation">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_B__Log_U__3C69FB99">
+          <End Type="KKSOFModel.Security_User" Role="Security_User" Multiplicity="1" />
+          <End Type="KKSOFModel.Citizen_BackgroundInformation" Role="Citizen_BackgroundInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_BackgroundInformation">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizen_N__Follo__34C8D9D1">
+          <End Type="KKSOFModel.Citizen_FollowUps" Role="Citizen_FollowUps" Multiplicity="0..1" />
+          <End Type="KKSOFModel.Citizen_Notes" Role="Citizen_Notes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citizen_FollowUps">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Citizen_Notes">
+              <PropertyRef Name="FollowupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Deadlines__Citiz__38996AB5">
+          <End Type="KKSOFModel.Security_Citizens" Role="Security_Citizens" Multiplicity="1" />
+          <End Type="KKSOFModel.Deadline" Role="Deadline" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Deadline">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Deadlines__Compl__398D8EEE">
+          <End Type="KKSOFModel.Security_User" Role="Security_User" Multiplicity="0..1" />
+          <End Type="KKSOFModel.Deadline" Role="Deadline" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Deadline">
+              <PropertyRef Name="Completedby" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Deadlines__Log_U__37A5467C">
+          <End Type="KKSOFModel.Security_User" Role="Security_User" Multiplicity="1" />
+          <End Type="KKSOFModel.Deadline" Role="Deadline" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Deadline">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Messages__Citize__412EB0B6">
+          <End Type="KKSOFModel.Security_Citizens" Role="Security_Citizens" Multiplicity="1" />
+          <End Type="KKSOFModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Messages__Delete__403A8C7D">
+          <End Type="KKSOFModel.Security_User" Role="Security_User" Multiplicity="1" />
+          <End Type="KKSOFModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="GET_CITIZENS_Result">
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="String" Name="Firstname" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Lastname" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="PersonalIdNo" Nullable="false" MaxLength="100" />
+          <Property Type="Byte" Name="Gender" Nullable="false" />
+          <Property Type="String" Name="Address" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="City" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Dateofbirth" Nullable="false" Precision="23" />
+          <Property Type="String" Name="Profession" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <EntityType Name="Document">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_from" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_UserId" Type="Guid" Nullable="false" />
+          <Property Name="DocumentType" Type="Byte" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DocURL" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
+          <Property Name="FollowupID" Type="Guid" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Deleted" Type="Boolean" Nullable="false" />
+          <Property Name="CitizenId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Citizen_FollowUps" Relationship="KKSOFModel.FK__Followup___Follo__32E0915F" FromRole="Document" ToRole="Citizen_FollowUps" />
+          <NavigationProperty Name="Security_Citizens" Relationship="KKSOFModel.FK__Followup___Citiz__33D4B598" FromRole="Document" ToRole="Security_Citizens" />
+          <NavigationProperty Name="Security_User" Relationship="KKSOFModel.FK__Followup___Log_U__31EC6D26" FromRole="Document" ToRole="Security_User" />
+        </EntityType>
+        <Association Name="FK__Followup___Follo__32E0915F">
+          <End Type="KKSOFModel.Citizen_FollowUps" Role="Citizen_FollowUps" Multiplicity="0..1" />
+          <End Type="KKSOFModel.Document" Role="Document" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citizen_FollowUps">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Document">
+              <PropertyRef Name="FollowupID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Followup___Citiz__33D4B598">
+          <End Type="KKSOFModel.Security_Citizens" Role="Security_Citizens" Multiplicity="1" />
+          <End Type="KKSOFModel.Document" Role="Document" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_Citizens">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Document">
+              <PropertyRef Name="CitizenId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Followup___Log_U__31EC6D26">
+          <End Type="KKSOFModel.Security_User" Role="Security_User" Multiplicity="1" />
+          <End Type="KKSOFModel.Document" Role="Document" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="Document">
+              <PropertyRef Name="Log_UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="Get_FilteredNotes_Result">
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="DateTime" Name="Createdtimestamp" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="Log_from" Nullable="false" Precision="23" />
+          <Property Type="Guid" Name="Log_UserId" Nullable="false" />
+          <Property Type="Byte" Name="DocumentType" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="DocURL" Nullable="true" MaxLength="512" />
+          <Property Type="Guid" Name="FollowupID" Nullable="true" />
+          <Property Type="String" Name="Description" Nullable="true" />
+          <Property Type="Guid" Name="CitizenId" Nullable="false" />
+          <Property Type="String" Name="Firstname" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Lastname" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="PersonalIdNo" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserFirstName" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserLastName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="UserId" Nullable="false" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="Get_FilteredCitizenNotes_Result">
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="DateTime" Name="Createdtimestamp" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="Log_from" Nullable="false" Precision="23" />
+          <Property Type="Guid" Name="Log_UserId" Nullable="false" />
+          <Property Type="Byte" Name="DocumentType" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="DocURL" Nullable="true" MaxLength="512" />
+          <Property Type="Guid" Name="FollowupID" Nullable="true" />
+          <Property Type="String" Name="Description" Nullable="true" />
+          <Property Type="Guid" Name="CitizenId" Nullable="false" />
+          <Property Type="String" Name="Firstname" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Lastname" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="PersonalIdNo" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserFirstName" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserLastName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="UserId" Nullable="false" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="Get_FilteredMessages_Result">
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="DateTime" Name="Createdtimestamp" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="Log_from" Nullable="false" Precision="23" />
+          <Property Type="Guid" Name="Log_UserId" Nullable="false" />
+          <Property Type="Byte" Name="Status" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="true" />
+          <Property Type="Guid" Name="CitizenId" Nullable="false" />
+          <Property Type="String" Name="MessageType" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="MessageStatus" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Firstname" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Lastname" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="PersonalIdNo" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserFirstName" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserLastName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="UserId" Nullable="false" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="Get_FilteredCitizenMessages_Result">
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="DateTime" Name="Createdtimestamp" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="Log_from" Nullable="false" Precision="23" />
+          <Property Type="Guid" Name="Log_UserId" Nullable="false" />
+          <Property Type="Byte" Name="Status" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="true" />
+          <Property Type="Guid" Name="CitizenId" Nullable="false" />
+          <Property Type="String" Name="MessageType" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="MessageStatus" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Firstname" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Lastname" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="PersonalIdNo" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserFirstName" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserLastName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="UserId" Nullable="false" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="Get_FilteredDeadlines_Result">
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="DateTime" Name="Createdtimestamp" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="Log_from" Nullable="false" Precision="23" />
+          <Property Type="Guid" Name="Log_UserId" Nullable="false" />
+          <Property Type="Guid" Name="CitizenId" Nullable="false" />
+          <Property Type="String" Name="Title" Nullable="true" />
+          <Property Type="Byte" Name="DeadlineOwnertype" Nullable="false" />
+          <Property Type="Byte" Name="DeadlineState" Nullable="false" />
+          <Property Type="Byte" Name="DeadlineColorEnum" Nullable="false" />
+          <Property Type="DateTime" Name="DeadlineDate" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="CompletedDate" Nullable="true" Precision="23" />
+          <Property Type="Guid" Name="Completedby" Nullable="true" />
+          <Property Type="Boolean" Name="Deleted" Nullable="false" />
+          <Property Type="String" Name="Firstname" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Lastname" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="PersonalIdNo" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserId" Nullable="false" MaxLength="60" />
+          <Property Type="String" Name="UserFirstName" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="UserLastName" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <EntityType Name="CitizenstatusNoteMapping">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="StatusNoteId" Type="Guid" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Citizen_Notes" Relationship="KKSOFModel.FK__Citizenst__Statu__2EDAF651" FromRole="CitizenstatusNoteMapping" ToRole="Citizen_Notes" />
+          <NavigationProperty Name="Security_User" Relationship="KKSOFModel.FK__Citizenst__UserI__2FCF1A8A" FromRole="CitizenstatusNoteMapping" ToRole="Security_User" />
+        </EntityType>
+        <Association Name="FK__Citizenst__Statu__2EDAF651">
+          <End Type="KKSOFModel.Citizen_Notes" Role="Citizen_Notes" Multiplicity="1" />
+          <End Type="KKSOFModel.CitizenstatusNoteMapping" Role="CitizenstatusNoteMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citizen_Notes">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="CitizenstatusNoteMapping">
+              <PropertyRef Name="StatusNoteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Citizenst__UserI__2FCF1A8A">
+          <End Type="KKSOFModel.Security_User" Role="Security_User" Multiplicity="1" />
+          <End Type="KKSOFModel.CitizenstatusNoteMapping" Role="CitizenstatusNoteMapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Security_User">
+              <PropertyRef Name="GUID" />
+            </Principal>
+            <Dependent Role="CitizenstatusNoteMapping">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Citizen_FollowUpAttachments">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="Guid" Nullable="false" />
+          <Property Name="Createdtimestamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Log_UserId" Type="Guid" />
+          <Property Name="CitizenId" Type="Guid" />
+          <Property Name="DocType" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Docname" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Objectid" Type="Guid" />
+          <Property Name="FollowupId" Type="Guid" Nullable="false" />
+        </EntityType>
+        <ComplexType Name="Get_CitizenbyGUID_Result">
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="String" Name="Firstname" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Lastname" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="PersonalIdNo" Nullable="false" MaxLength="100" />
+          <Property Type="Byte" Name="Gender" Nullable="false" />
+          <Property Type="String" Name="Address" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="City" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Dateofbirth" Nullable="false" Precision="23" />
+          <Property Type="String" Name="Profession" Nullable="true" MaxLength="100" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="KKSOFModelStoreContainer" CdmEntityContainer="KKSOFDBEntities">
+          <EntitySetMapping Name="Citizen_FollowUps">
+            <EntityTypeMapping TypeName="KKSOFModel.Citizen_FollowUps">
+              <MappingFragment StoreEntitySet="Citizen_FollowUps">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="NextFollowupdate" ColumnName="NextFollowupdate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Consent" ColumnName="Consent" />
+                <ScalarProperty Name="CaseWorkerdescription" ColumnName="CaseWorkerdescription" />
+                <ScalarProperty Name="StatusNoteID" ColumnName="StatusNoteID" />
+                <ScalarProperty Name="Result" ColumnName="Result" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Citizen_Notes">
+            <EntityTypeMapping TypeName="KKSOFModel.Citizen_Notes">
+              <MappingFragment StoreEntitySet="Citizen_Notes">
+                <ScalarProperty Name="FollowupId" ColumnName="FollowupId" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="Score" ColumnName="Score" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Participants" ColumnName="Participants" />
+                <ScalarProperty Name="SaveDraft" ColumnName="SaveDraft" />
+                <ScalarProperty Name="Headline" ColumnName="Headline" />
+                <ScalarProperty Name="Notetype" ColumnName="Notetype" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Security_Citizens">
+            <EntityTypeMapping TypeName="KKSOFModel.Security_Citizens">
+              <MappingFragment StoreEntitySet="Security_Citizens">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="PersonalIdNo" ColumnName="PersonalIdNo" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Dateofbirth" ColumnName="Dateofbirth" />
+                <ScalarProperty Name="Profession" ColumnName="Profession" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Security_User">
+            <EntityTypeMapping TypeName="KKSOFModel.Security_User">
+              <MappingFragment StoreEntitySet="Security_User">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Usertype" ColumnName="Usertype" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="Profession" ColumnName="Profession" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Citizen_BackgroundInformation">
+            <EntityTypeMapping TypeName="KKSOFModel.Citizen_BackgroundInformation">
+              <MappingFragment StoreEntitySet="Citizen_BackgroundInformation">
+                <ScalarProperty Name="SocialInformation_Lastupdate" ColumnName="SocialInformation_Lastupdate" />
+                <ScalarProperty Name="SocialInformation" ColumnName="SocialInformation" />
+                <ScalarProperty Name="SchoolInformation_Lastupdate" ColumnName="SchoolInformation_Lastupdate" />
+                <ScalarProperty Name="SchoolInformation" ColumnName="SchoolInformation" />
+                <ScalarProperty Name="HealthInformation_Lastupdate" ColumnName="HealthInformation_Lastupdate" />
+                <ScalarProperty Name="HealthInformation" ColumnName="HealthInformation" />
+                <ScalarProperty Name="MedicalHistory_Lastupdate" ColumnName="MedicalHistory_Lastupdate" />
+                <ScalarProperty Name="MedicalHistory" ColumnName="MedicalHistory" />
+                <ScalarProperty Name="Lifehistory_Lastupdate" ColumnName="Lifehistory_Lastupdate" />
+                <ScalarProperty Name="LifeHistory" ColumnName="LifeHistory" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Deadlines">
+            <EntityTypeMapping TypeName="KKSOFModel.Deadline">
+              <MappingFragment StoreEntitySet="Deadlines">
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                <ScalarProperty Name="Completedby" ColumnName="Completedby" />
+                <ScalarProperty Name="CompletedDate" ColumnName="CompletedDate" />
+                <ScalarProperty Name="DeadlineDate" ColumnName="DeadlineDate" />
+                <ScalarProperty Name="DeadlineColorEnum" ColumnName="DeadlineColorEnum" />
+                <ScalarProperty Name="DeadlineState" ColumnName="DeadlineState" />
+                <ScalarProperty Name="DeadlineOwnertype" ColumnName="DeadlineOwnertype" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="KKSOFModel.Message">
+              <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="MessageStatus" ColumnName="MessageStatus" />
+                <ScalarProperty Name="MessageType" ColumnName="MessageType" />
+                <ScalarProperty Name="recipient" ColumnName="recipient" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GET_CITIZENS" FunctionName="KKSOFModel.Store.GET_CITIZENS">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="KKSOFModel.GET_CITIZENS_Result">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="PersonalIdNo" ColumnName="PersonalIdNo" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Dateofbirth" ColumnName="Dateofbirth" />
+                <ScalarProperty Name="Profession" ColumnName="Profession" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Documents">
+            <EntityTypeMapping TypeName="KKSOFModel.Document">
+              <MappingFragment StoreEntitySet="Documents">
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="FollowupID" ColumnName="FollowupID" />
+                <ScalarProperty Name="DocURL" ColumnName="DocURL" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DocumentType" ColumnName="DocumentType" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Get_FilteredNotes" FunctionName="KKSOFModel.Store.Get_FilteredNotes">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="KKSOFModel.Get_FilteredNotes_Result">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="DocumentType" ColumnName="DocumentType" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DocURL" ColumnName="DocURL" />
+                <ScalarProperty Name="FollowupID" ColumnName="FollowupID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="PersonalIdNo" ColumnName="PersonalIdNo" />
+                <ScalarProperty Name="UserFirstName" ColumnName="UserFirstName" />
+                <ScalarProperty Name="UserLastName" ColumnName="UserLastName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Get_FilteredCitizenNotes" FunctionName="KKSOFModel.Store.Get_FilteredCitizenNotes">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="KKSOFModel.Get_FilteredCitizenNotes_Result">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="DocumentType" ColumnName="DocumentType" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DocURL" ColumnName="DocURL" />
+                <ScalarProperty Name="FollowupID" ColumnName="FollowupID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="PersonalIdNo" ColumnName="PersonalIdNo" />
+                <ScalarProperty Name="UserFirstName" ColumnName="UserFirstName" />
+                <ScalarProperty Name="UserLastName" ColumnName="UserLastName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Get_FilteredMessages" FunctionName="KKSOFModel.Store.Get_FilteredMessages">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="KKSOFModel.Get_FilteredMessages_Result">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="MessageType" ColumnName="MessageType" />
+                <ScalarProperty Name="MessageStatus" ColumnName="MessageStatus" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="PersonalIdNo" ColumnName="PersonalIdNo" />
+                <ScalarProperty Name="UserFirstName" ColumnName="UserFirstName" />
+                <ScalarProperty Name="UserLastName" ColumnName="UserLastName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Get_FilteredCitizenMessages" FunctionName="KKSOFModel.Store.Get_FilteredCitizenMessages">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="KKSOFModel.Get_FilteredCitizenMessages_Result">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="MessageType" ColumnName="MessageType" />
+                <ScalarProperty Name="MessageStatus" ColumnName="MessageStatus" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="PersonalIdNo" ColumnName="PersonalIdNo" />
+                <ScalarProperty Name="UserFirstName" ColumnName="UserFirstName" />
+                <ScalarProperty Name="UserLastName" ColumnName="UserLastName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Get_FilteredDeadlines" FunctionName="KKSOFModel.Store.Get_FilteredDeadlines">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="KKSOFModel.Get_FilteredDeadlines_Result">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="Log_from" ColumnName="Log_from" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="DeadlineOwnertype" ColumnName="DeadlineOwnertype" />
+                <ScalarProperty Name="DeadlineState" ColumnName="DeadlineState" />
+                <ScalarProperty Name="DeadlineColorEnum" ColumnName="DeadlineColorEnum" />
+                <ScalarProperty Name="DeadlineDate" ColumnName="DeadlineDate" />
+                <ScalarProperty Name="CompletedDate" ColumnName="CompletedDate" />
+                <ScalarProperty Name="Completedby" ColumnName="Completedby" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="PersonalIdNo" ColumnName="PersonalIdNo" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserFirstName" ColumnName="UserFirstName" />
+                <ScalarProperty Name="UserLastName" ColumnName="UserLastName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="CitizenstatusNoteMappings">
+            <EntityTypeMapping TypeName="KKSOFModel.CitizenstatusNoteMapping">
+              <MappingFragment StoreEntitySet="CitizenstatusNoteMapping">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="StatusNoteId" ColumnName="StatusNoteId" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Citizen_FollowUpAttachments">
+            <EntityTypeMapping TypeName="KKSOFModel.Citizen_FollowUpAttachments">
+              <MappingFragment StoreEntitySet="Citizen_FollowUpAttachments">
+                <ScalarProperty Name="FollowupId" ColumnName="FollowupId" />
+                <ScalarProperty Name="Objectid" ColumnName="Objectid" />
+                <ScalarProperty Name="Docname" ColumnName="Docname" />
+                <ScalarProperty Name="DocType" ColumnName="DocType" />
+                <ScalarProperty Name="CitizenId" ColumnName="CitizenId" />
+                <ScalarProperty Name="Log_UserId" ColumnName="Log_UserId" />
+                <ScalarProperty Name="Createdtimestamp" ColumnName="Createdtimestamp" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Get_CitizenbyGUID" FunctionName="KKSOFModel.Store.Get_CitizenbyGUID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="KKSOFModel.Get_CitizenbyGUID_Result">
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="Firstname" ColumnName="Firstname" />
+                <ScalarProperty Name="Lastname" ColumnName="Lastname" />
+                <ScalarProperty Name="PersonalIdNo" ColumnName="PersonalIdNo" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Dateofbirth" ColumnName="Dateofbirth" />
+                <ScalarProperty Name="Profession" ColumnName="Profession" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
