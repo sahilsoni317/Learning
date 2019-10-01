@@ -1,0 +1,1502 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!--Bootstrap-->
+    <link rel="stylesheet" type="text/css" href="../Content/bootstrap.min.css" />
+    <script src="../Scripts/jquery-3.0.0.min.js"></script>
+    <script src="../Scripts/popper.min.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../css/globalStyle.css">
+    <link rel="stylesheet" type="text/css" href="../css/nav.css">
+    <link rel="stylesheet" type="text/css" href="../css/top-bar.css">
+    <!--<link rel="stylesheet" type="text/css" href="../css/dashboard.css">-->
+    <link rel="stylesheet" type="text/css" href="../css/citizen-context.css">
+    <link rel="stylesheet" type="text/css" href="../css/search-citizen.css">
+    <link rel="stylesheet" type="text/css" href="../css/citizen-page.css">
+    <link href="../css/div-oneline.css" rel="stylesheet" />
+
+    <script src="../Scripts/Master.js"></script>
+
+    <!--Scripts for multiselect dropdown box-->
+    <script src="../Scripts/icontains.js"></script>
+    <script src="../Scripts/comboTreePlugin.js"></script>
+
+    <title>VITAE</title>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var guid = GetParameterValues('guid');
+            var citizen = JSON.parse(sessionStorage.getItem(guid));
+            var user = JSON.parse(sessionStorage.getItem("User"));
+            if (citizen == null) {
+                var Overview = document.getElementById('Overblik');
+                var Sog = document.getElementById('Sog');
+                var Borger = document.getElementById('Borger');
+                var Medicin = document.getElementById('Medicin');
+
+                if (user.Usertype == 1) {
+                    Overview.setAttribute('href', '../KKSOF/index.htm');
+                } else {
+                    Overview.setAttribute('href', '../KKSOF/overview_deliverer.htm');
+                }
+                Sog.setAttribute('href', '../KKSOF/search.htm');
+                Borger.setAttribute('href', '../KKSOF/citizen.htm');
+                Medicin.setAttribute('href', '../KKSOF/medicin.htm');
+                //$('#Borger').css("display", "none");
+                //$('#Medicin').css("display", "none");
+            }
+            else {
+                var Overview = document.getElementById('Overblik');
+                var Sog = document.getElementById('Sog');
+                var Borger = document.getElementById('Borger');
+                var Medicin = document.getElementById('Medicin');
+
+                if (user.Usertype == 1) {
+                    Overview.setAttribute('href', '../KKSOF/index.htm?guid=' + guid + '&');
+                } else {
+                    Overview.setAttribute('href', '../KKSOF/overview_deliverer.htm?guid=' + guid + '&');
+                }
+                Sog.setAttribute('href', '../KKSOF/search.htm?guid=' + guid + '&');
+                Borger.setAttribute('href', '../KKSOF/citizen.htm?guid=' + guid + '&');
+                Medicin.setAttribute('href', '../KKSOF/medicin.htm?guid=' + guid + '&');
+                //$('#Borger').css("display", "grid");
+                //$('#Medicin').css("display", "grid");
+
+            }
+
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var guid = GetParameterValues('guid');
+            var citizen = JSON.parse(sessionStorage.getItem(guid));
+            $('#Fullname').text(citizen.Firstname + ' ' + citizen.Lastname);
+            $('#CPRNo').text(citizen.PersonalIdNo);
+            $('#Address').text(citizen.Address);
+            $('#City').text(citizen.City);
+
+            $.ajax({
+                type: "GET",
+                url: sessionStorage.getItem("BaseUrl") + "api/Citizen/backgroundinformation",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: {
+                    CitizenId: guid
+                },
+                success: function (data) {
+                    Formatdate('Livshistorie-lastupdated', data[0].Lifehistory_Lastupdate);
+                    $('#livshistorie-content').text(data[0].LifeHistory);
+
+                    Formatdate('sygdomshistorie-lastupdated', data[0].MedicalHistory_Lastupdate);
+                    $('#sygdomshistorie-content').text(data[0].MedicalHistory);
+
+                    Formatdate('Sundhedsoplysninger-lastupdated', data[0].HealthInformation_Lastupdate);
+                    $('#Sundhedsoplysninger-content').text(data[0].HealthInformation);
+
+                    Formatdate('Skoleoplysninger-lastupdated', data[0].SchoolInformation_Lastupdate);
+                    $('#Skoleoplysninger-content').text(data[0].SchoolInformation);
+
+                    Formatdate('Socialfaglige-lastupdated', data[0].SocialInformation_Lastupdate);
+                    $('#Socialfaglige-content').text(data[0].SocialInformation);
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        function Formatdate(id, formateDate) {
+            var date = new Date(formateDate);
+            var formattedDate = ("0" + date.getDate()).slice(-2) + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + date.getFullYear() + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+            var dateitem = document.getElementById(id);
+            dateitem.textContent = 'Opdateret: ' + formattedDate;
+        }
+    </script>
+
+    <script type="text/javascript">
+        function GetParameterValues(param) {
+            var url = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < url.length; i++) {
+                var urlparam = url[i].split('=');
+                if (urlparam[0] == param) {
+                    return urlparam[1];
+                }
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var guid = GetParameterValues('guid');
+            var citizen = JSON.parse(sessionStorage.getItem(guid));
+            if (citizen != null) {
+                $.ajax({
+                    type: "GET",
+                    url: sessionStorage.getItem("BaseUrl") + "api/citizenmessages",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: { CitizenId: guid },
+                    success: function (output) {
+                        $('#citizen-overview-messages').empty();
+                        $.each(output, function (index, val) {
+                            var status = val.Status;
+                            var statusData;
+                            if (status == 1) { statusData = 'Sendt' }
+                            else if (status == 2) { statusData = 'Modtaget' }
+                            else { statusData = 'Done' }
+                            var CreatedDate = new Date(val.Date);
+                            var formattedDate = ("0" + CreatedDate.getDate()).slice(-2) + "-" + ("0" + (CreatedDate.getMonth() + 1)).slice(-2) + "-" + CreatedDate.getFullYear();
+                            var description = val.Description;
+                            var rows = "<li><a href=#>" +
+								"<div class='message-date'>" + formattedDate + "</div>" +
+								"<div class='status'>" + statusData + "</div>" +
+								"<div class='message'>" + description + "</div>" +
+								"</a> </li> ";
+                            $('#citizen-overview-messages').append(rows);
+                        });
+                    }
+                });
+            }
+
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var guid = GetParameterValues('guid');
+            var citizen = JSON.parse(sessionStorage.getItem(guid));
+            if (citizen != null) {
+                $.ajax({
+                    type: "GET",
+                    url: sessionStorage.getItem("BaseUrl") + "api/citizendeadline",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: { CitizenId: guid },
+                    success: function (output) {
+                        $('#citizen-overview-deadlines').empty();
+                        $.each(output, function (index, val) {
+                            var DeadlineColorEnum = val.Deadlinecolor;
+                            var DeadlineDate = new Date(val.DeadlineDate);
+                            var formattedDate = ("0" + DeadlineDate.getDate()).slice(-2) + "-" + ("0" + (DeadlineDate.getMonth() + 1)).slice(-2) + "-" + DeadlineDate.getFullYear();
+                            var Title = val.DeadlineTitle;
+                            var rows = "<li><a href=#>" +
+								"<div  class='deadline-date'>" + formattedDate + "</div>" +
+								"<div target=" + DeadlineColorEnum + " class='deadline-color'></div>" +
+								"<div class='deadline-txt'>" + Title + "</div>" +
+								"</a> </li> ";
+                            $('#citizen-overview-deadlines').append(rows);
+                        });
+                    }
+                });
+            }
+
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            GetCitizenDocument();
+        });
+
+        function GetCitizenDocument() {
+            var guid = GetParameterValues('guid');
+            var citizen = JSON.parse(sessionStorage.getItem(guid));
+            if (citizen != null) {
+                $.ajax({
+                    type: "GET",
+                    url: sessionStorage.getItem("BaseUrl") + "api/citizendocuments",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: { CitizenId: guid },
+                    success: function (output) {
+                        $('#citizen-overview-notes').empty();
+                        $.each(output, function (index, val) {
+                            var Description = truncate(val.Description);
+                            var CreatedDate = new Date(val.Date);
+                            var formattedDate = ("0" + CreatedDate.getDate()).slice(-2) + "-" + ("0" + (CreatedDate.getMonth() + 1)).slice(-2) + "-" + CreatedDate.getFullYear();
+                            var DocType = GetNote(val.DocType);
+                            var DocName = truncate(val.DocName);
+                            var rows = "<li><a href='#' data-toggle='modal' data-target='#createNoteModal'  onclick='OpenNote(" + JSON.stringify(val) + ")'>" +
+                                "<div  class='note-col' target=" + val.DocType + "></div>" +
+                                "<div class='note-date'>" + formattedDate + "</div>" +
+                                "<div class='note-type'>" + DocType + "</div>" +
+                                "<div class='note-header'>" + DocName + "</div>" +
+                                "<div class='note-txt'>" + Description + "</div>" +
+                                "</a> </li> ";
+                            $('#citizen-overview-notes').append(rows);
+                        });
+                    }
+                });
+            }
+        }
+    </script>
+
+    <script>
+        function OpenNote(param) {
+            var Note_Createddate = document.getElementById("Note_Createddate");
+            var Note_Type = document.getElementById("Note_Type");
+            var Note_CreatedBy = document.getElementById("Note_CreatedBy");
+            var Note_Profession = document.getElementById("Note_Profession");
+            var Note_Headline = document.getElementById("Note_Headline");
+            var Note_Text = document.getElementById("Note_Text");
+            document.getElementById("Note_Id").value = param.Guid;
+
+            $.ajax({
+                type: "GET",
+                url: sessionStorage.getItem("BaseUrl") + "api/Document/" + param.Guid,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (output) {
+                    var date = new Date(output.CreatedDate);
+                    var formattedDate = ("0" + date.getDate()).slice(-2) + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + date.getFullYear() + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+                    Note_Createddate.value = formattedDate;
+                    if (output.NoteType == 1) {
+                        Note_Type.selectedIndex = 1;
+                    } else if (output.NoteType == 2) {
+                        Note_Type.selectedIndex = 2;
+                    } else if (output.NoteType == 3) {
+                        Note_Type.selectedIndex = 3;
+                    } else if (output.NoteType == 4) {
+                        Note_Type.selectedIndex = 4;
+                    } else if (output.NoteType == 5) {
+                        Note_Type.selectedIndex = 5;
+                    }
+                    GetNoteHeadlines(output.Noteheadline);
+                    Note_Text.value = output.NoteText;
+                    Note_CreatedBy.value = output.FullName + ' (' + output.Username + ')';
+                    Note_Profession.value = output.Profession;
+                }
+            });
+        }
+
+        function GetNote(NoteType) {
+            if (NoteType == 1) {
+                return 'Type 1';
+            } else if (NoteType == 2) {
+                return 'Type 2';
+            } else if (NoteType == 3) {
+                return 'Type 3';
+            } else if (NoteType == 4) {
+                return 'Type 4';
+            } else if (NoteType == 5) {
+                return 'Type 5';
+            }
+        }
+
+        function GetNoteHeadlines(headlines) {
+            var headlinesArrray = headlines.split(',');
+            comboTree1.ClearItems();
+            for (var i = 0; i < headlinesArrray.length; i++) {
+                comboTree1.SelectItems(GetObjectId(SampleJSONData, headlinesArrray[i]));
+            }
+        }
+
+
+        function getBlankNoteModel() {
+            var user = JSON.parse(sessionStorage.getItem("User"));
+            document.getElementById("Note_Type").selectedIndex = 0;
+            document.getElementById("Note_CreatedBy").value = user.Firstname + ' ' + user.Lastname + ' (' + user.UserName + ')';
+            document.getElementById("Note_Profession").value = user.Profession;
+            comboTree1.ClearItems();
+            document.getElementById("Note_Text").value = '';
+            var today = new Date();
+            document.getElementById("Note_Createddate").value = ("0" + today.getDate()).slice(-2) + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-" + today.getFullYear() + " " + ("0" + today.getHours()).slice(-2) + ":" + ("0" + today.getMinutes()).slice(-2);
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div class="top-bar">
+        <div class="logo-vitae">VITAE</div>
+        <div class="time-stamp">
+            <div id="current-date"></div>
+            <div id="current-month-year"></div>
+            <div id="current-day"></div>
+        </div>
+
+        <a href="#" class="user-container">
+            <div id="divUser" class="user-name"></div>
+            <div id="divRole" class="user-role"></div>
+            <div class="top-dropdown-arrow"></div>
+        </a>
+
+        <a href="#" class="change-overview">
+            <div class="overview-name">Team overblik</div>
+            <div class="top-dropdown-arrow"></div>
+        </a>
+
+        <!-- Plus Dropdown-->
+        <div class="dropdown">
+            <a href="#" id="plusDropdown" class="btn-plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="0,1"></a>
+            <div class="dropdown-menu" aria-labelledby="plusDropdown">
+                <h6 class="dropdown-header">Opret</h6>
+                <a class="dropdown-item dropdown-item-note" href="#">Notat</a>
+                <a class="dropdown-item dropdown-item-message" href="#">Besked</a>
+                <a class="dropdown-item dropdown-item-deadline" href="#">Frist</a>
+            </div>
+        </div>
+    </div>
+
+	<nav>
+		<a id="Overblik" class="menu-item">
+			<div class="menu-item-overblik"><i class="fas fa-tachometer-alt"></i></div>
+			<div>Overblik</div>
+		</a>
+		<a id="Sog" class="menu-item">
+			<div class="menu-item-search"><i class="fas fa-search"></i></div>
+			<div>Søg</div>
+		</a>
+		<a id="Borger" class="menu-item">
+			<div class="menu-item-citizen"><i class="fas fa-user-circle"></i></div>
+			<div>Borger</div>
+		</a>
+		<!--<a id="Medicin" class="menu-item">
+			<div class="menu-item-medicin"><i class="fas fa-first-aid"></i></div>
+			<div>Medicin</div>
+		</a>-->
+
+		<ul class="bottom-nav-icons">
+			<li>
+				<a id="close-citizen" class="menu-item" href="#">
+					<div class="menu-item-session"><i class="fas fa-user-times"></i></div>
+					<div>Luk borger</div>
+				</a>
+			</li>
+			<li>
+				<a id="setting" class="menu-item" href="#">
+					<div class="menu-item-setting"><i class="fas fa-cog"></i></div>
+					<div>Indstillinger</div>
+				</a>
+			</li>
+		</ul>
+	</nav>
+
+    <!--CITIZEN CONTEXT BAR-->
+    <div class="citizen-context">
+
+        <div class="context-citizen-name">
+            <img src="../images/icon-citizen.svg" class="context-icon icon-citizen" />
+            <div id="Fullname"></div>
+            <div id="CPRNo"></div>
+        </div>
+
+        <div class="context-citizen-address">
+            <img src="../images/icon-pin.svg" class="context-icon icon-address" />
+            <div id="Address"></div>
+            <div id="City"></div>
+        </div>
+
+        <div class="risk-container">Risiko</div>
+
+        <div class="cave-contagion-container">
+            <div class="cave-info">CAVE</div>
+            <div class="contagion-info">Smitte</div>
+        </div>
+
+    </div>
+
+    <!--TABS-->
+    <div class="tabset">
+        <button class="tablinks" onclick="openTab(event, 'Baggrundsbeskrivelse')">Baggrundsbeskrivelse</button>
+        <button class="tablinks" onclick="openTab(event, 'Henvendelse')" disabled>Henvendelse</button>
+        <button class="tablinks" onclick="openTab(event, 'Sager')" disabled>Sager</button>
+        <button class="tablinks" onclick="openTab(event, 'Borgers-plan')" disabled>Borgers plan</button>
+        <button class="tablinks" onclick="openTab(event, 'medicine-tab')"><span class="tabs-icons tab-icon1"></span> Medicin</button>
+    </div>
+
+    <div class="content-wrapper citizen-content-wrapper">
+
+        <div class="tab-content-wrapper">
+            <!-- Tab content -->
+            <div id="Baggrundsbeskrivelse" class="tabcontent">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Livshistorie</h3>
+                        <div id="Livshistorie-lastupdated" class="last-updated"></div>
+                    </div>
+                    <p id="livshistorie-content" contenteditable="false"></p>
+                    <a id="livshistorie-edit-btn" href="#/" class="card-content-edit" onclick="editContent('Livshistorie-lastupdated', 'livshistorie-edit-btn', 'livshistorie-content');">Rediger</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Sygdomshistorie</h3>
+                        <div id="sygdomshistorie-lastupdated" class="last-updated"></div>
+                    </div>
+                    <p id="sygdomshistorie-content" contenteditable="false"></p>
+                    <a id="sygdomshistorie-edit-btn" href="#/" class="card-content-edit" onclick="editContent('sygdomshistorie-lastupdated', 'sygdomshistorie-edit-btn', 'sygdomshistorie-content');">Rediger</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Sundhedsoplysninger</h3>
+                        <div id="Sundhedsoplysninger-lastupdated" class="last-updated"></div>
+                    </div>
+                    <p id="Sundhedsoplysninger-content" contenteditable="false"></p>
+                    <a id="Sundhedsoplysninger-edit-btn" href="#/" class="card-content-edit" onclick="editContent('Sundhedsoplysninger-lastupdated', 'Sundhedsoplysninger-edit-btn', 'Sundhedsoplysninger-content');">Rediger</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Skoleoplysninger</h3>
+                        <div id="Skoleoplysninger-lastupdated" class="last-updated"></div>
+                    </div>
+                    <p id="Skoleoplysninger-content" contenteditable="false"></p>
+                    <a id="Skoleoplysninger-edit-btn" href="#/" class="card-content-edit" onclick="editContent('Skoleoplysninger-lastupdated', 'Skoleoplysninger-edit-btn', 'Skoleoplysninger-content');">Rediger</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Socialfaglige oplysninger</h3>
+                        <div id="Socialfaglige-lastupdated" class="last-updated"></div>
+                    </div>
+                    <p id="Socialfaglige-content" contenteditable="false"></p>
+                    <a id="Socialfaglige-edit-btn" href="#/" class="card-content-edit" onclick="editContent('Socialfaglige-lastupdated', 'Socialfaglige-edit-btn', 'Socialfaglige-content');">Rediger</a>
+                </div>
+            </div>
+
+            <div id="Henvendelse" class="tabcontent">
+                <h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3>
+            </div>
+
+            <div id="Sager" class="tabcontent">
+                <h3>Sager</h3>
+            </div>
+
+            <div id="Borgers-plan" class="tabcontent">
+                <div class="actionPlan-followUp">Du mangler at følge op på.......</div>
+
+                <div>
+                    Indsats
+                    <div>Indsatsmål</div>
+                </div>
+            </div>
+
+            <div id="medicine-tab" class="tabcontent">
+                <div class="card-BG">
+                   
+                        <ul class="BreadcumNav">
+                            <li><a id="backpage" href="citizen.htm?guid=a1bdd2e5-2bed-476f-8aa1-2abf1e86b85a&">Medicinoversigt</a></li>
+                            <li><a id="currentpage">Tilføj registrering</a></li>                            
+                        </ul>                       
+                    
+
+                    <div class="row velg-registration-fields">
+                        <div class="col-sm-2">
+                            <label>Vælg registrering</label>
+                            <select class="drop-down">
+                                <option value="Ophældt">Ophældt</option>
+                                <option value="Udleveret">Udleveret</option>
+                                <option value="Indtaget overvåget">Indtaget overvåget</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Tidsramme</label>
+                            <select class="drop-down">
+                                <option value="Periode">Periode</option>
+                                <option value="Tidspunkt">Tidspunkt</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Fra</label>
+                            <select class="drop-down">
+                                <option value="13-09-2019">13-09-2019</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Til</label>
+                            <select class="drop-down">
+                                <option value="19-95-2019">19-09-2019</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="button" class="valge-btn" value="Vælg" id="findRecords"/>
+                        </div>
+                    </div>
+
+                    <div class="row velg-registration-fields">
+                        <div class="col-sm-6">
+                            <label>Medicinering</label>
+                            <select class="drop-down" id="medicineName">
+                                <option value="Alle">Alle</option>
+                                <option value="med1">Metforminhydrochlorid, filmovertrukne tbl, 100 stk. 500 mg, 1 tbl x 3 dgl</option>
+                                <option value="med2">Phenprocoumon, tabletter, 3 mg, 1 tbl x 1 dgl</option>
+                                <option value="med1">Paracetamol, filmovertrukken tbl, 500 mg, 1 tbl x 4 dgl</option>
+                                <option value="med2">Paracetamol, filmovertrukken tbl, 250 mg, 1 tbl x 4 dgl</option>
+                                <option value="med1">Simvastatin, filmovertrukne tbl, 20 mg, 1 tbl x 3 dgl om aftenen</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row" id="medicin-tables">
+                        <div class="col-sm-6">
+                            <div class="table-caption">Metforminhydrochlorid, filmovertrukne tbl, 100 stk. 500 mg, 1 tbl x 3 dgl</div>
+                            <table class="medicine-table">
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>08:00</th>
+                                    <th>12:00</th>
+                                    <th>17:00</th>
+                                    <th>22.00</th>
+                                </tr>
+                                <tr>
+                                    <td>13-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>14-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>15-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>16-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>17-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>18-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>19-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+
+                            <div class="table-caption">Paracetamol, filmovertrukken tbl, 500 mg, 1 tbl x 4 dgl</div>
+                            <table class="medicine-table">
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>08:00</th>
+                                    <th>12:00</th>
+                                    <th>17:00</th>
+                                    <th>22.00</th>
+                                </tr>
+                                <tr>
+                                    <td>13-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>14-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>15-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>16-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>17-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>18-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>19-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                            </table>
+
+                            <div class="table-caption">Paracetamol, filmovertrukken tbl, 250 mg, 1 tbl x 4 dgl</div>                            
+                            <table class="medicine-table">
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>08:00</th>
+                                    <th>12:00</th>
+                                    <th>17:00</th>
+                                    <th>22.00</th>
+                                </tr>
+                                <tr>
+                                    <td>13-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>14-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>15-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>16-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>17-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>18-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>19-09-2019</td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                            </table>                            
+
+                            <div class="table-caption">Phenprocoumon, tabletter, 3 mg, 1 tbl x 1 dgl</div>
+                            <table class="medicine-table" id="Phenprocoumon-table">
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>08:00</th>
+                                    <th>12:00</th>
+                                    <th>17:00</th>
+                                    <th>22.00</th>
+                                </tr>
+                                <tr>
+                                    <td>13-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>14-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>15-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>16-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>17-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>18-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>19-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="blue-indicator inlineindic"></div></td>
+                                </tr>
+                            </table>
+
+                            <table class="medicine-table" id="Phenprocoumon-table-mededit">
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>08:00</th>
+                                    <th>12:00</th>
+                                    <th>17:00</th>
+                                    <th>22.00</th>
+                                </tr>
+                                <tr>
+                                    <td>13-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <a class="med-change" onclick="medRemove(event)"><div class="blue-indicator inlineindic"></div></a></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>14-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <a class="med-change" onclick="medRemove(event)"><div class="blue-indicator inlineindic"></div></a></td>
+                                </tr>
+                                <tr>
+                                    <td>15-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <a class="med-change" onclick="medRemove(event)"><div class="blue-indicator inlineindic"></div></a></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>16-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <a class="med-change" onclick="medRemove(event)"><div class="blue-indicator inlineindic"></div></a></td>
+                                </tr>
+                                <tr>
+                                    <td>17-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <a class="med-change" onclick="medRemove(event)"><div class="blue-indicator inlineindic"></div></a></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>18-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <a class="med-change" onclick="medRemove(event)"><div class="blue-indicator inlineindic"></div></a></td>
+                                </tr>
+                                <tr>
+                                    <td>19-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <a class="med-change" onclick="medRemove(event)"><div class="blue-indicator inlineindic"></div></a></td>
+                                </tr>
+                            </table>
+
+                            
+
+
+                            <!--<div class="table-caption">Simvastatin, filmovertrukken tbl, 10 mg, 1 tbl x 1 dgl</div>-->
+                            <div class="table-caption">Simvastatin, filmovertrukne tbl, 20 mg, 1 tbl x 3 dgl om aftenen</div>
+                            <table class="medicine-table">
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>08:00</th>
+                                    <th>12:00</th>
+                                    <th>17:00</th>
+                                    <th>22.00</th>
+                                </tr>
+                                <tr>
+                                    <td>13-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="arrow-up-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>14-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="arrow-up-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>15-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="arrow-up-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>16-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="arrow-up-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>17-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="arrow-up-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr class="altTR">
+                                    <td>18-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="arrow-up-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>19-09-2019</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>1 <div class="arrow-up-indicator inlineindic"></div></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+
+                            
+
+                        </div>
+                       
+                         <div class="col-sm-4">
+
+                            <label class="font-bold">Farvebeskrivelse</label>
+                            <div class="farvebes">
+                                <div class="fav1">Ophæld</div>
+                                <div class="fav2">Anden ophældning</div>
+                                <div class="fav3">Udleveret</div>
+                                <div class="fav4">Indtaget overvåget</div>
+                            </div>
+
+                            <label class="font-bold">Ikonbeskrivelse</label>
+                            <div class="ikonbes">
+                                <div><div class="blue-indicator inlineindic"></div>Udleveres</div>
+                                <div><div class="arrow-up-indicator inlineindic"></div>Indtage overvåget</div>
+                                <div><div class="yellow-indicator inlineindic"></div>Ugyldig</div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 bottom-fields">
+                            <div><label>Verificer genophældning</label><input type="checkbox" /></div>
+                            <div><label>Ugyldiggør alle</label><input type="checkbox" /></div>
+                            <div>
+                                <label>Opret notat</label><input type="checkbox" />
+
+                                <label class="text-right">Notattype</label>
+                                <select class="">
+                                    <option value="Alle"></option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="textareaLabel">Bemærkning</label>
+                                <textarea>your comments</textarea>
+                            </div>
+                            <div>
+                                <a class="printlabel">Print Lables</a>
+                                <div class="buttons-right">                                    
+                                    <input type="button" value="Opret genophældning" id="oprat-btn"/>
+                                    <input type="button" value="Tilføj ændringer" id="tilfoj1-btn" />
+                                    <input type="button" value="Gem ophældninger" id="gem" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div><!-- end of tab medicine content -->
+
+        <div class="citizen-overview-wrapper">
+
+            <!--MESSAGES-->
+            <h4>Beskeder</h4>
+            <ul id="citizen-overview-messages"></ul>
+            <a href="#" class="citizen-overview-showALL-link">Vis alle beskeder</a>
+
+            <!--DEADLINES-->
+            <h4>Frister</h4>
+            <ul id="citizen-overview-deadlines"></ul>
+            <a href="#" class="citizen-overview-showALL-link">Vis alle frister</a>
+
+            <!--NOTES-->
+            <h4>Notater</h4>
+            <ul id="citizen-overview-notes"></ul>
+            <div class="citizen-overview-linkContainer">
+                <a href="#" class="citizen-overview-showALL-link" data-toggle="modal" data-target="#createNoteModal" onclick="getBlankNoteModel()">+Opret nyt notat</a>
+                <a href="#" class="citizen-overview-showALL-link">Vis alle notater</a>
+            </div>
+
+            <!--ACTIONPLAN OVERVIEW-->
+            <h4>Handleplan overblik</h4>
+            <ul id="citizen-overview-indsatsmaal">
+                <li>
+                    <a href="#">
+                        <ul>
+                            <li class="indsatsmaal">Indsatsmål - Husligt arbejde</li>
+                            <li><span class="part-goal">Delmål</span> - Blive bedre til at handle ind.</li>
+                            <li><span class="part-goal">Delmål</span> - Skal lære at tage opvasken hver aften.</li>
+                            <li><span class="part-goal">Delmål</span> - Støvsugning mindst en gang om ugen.</li>
+                        </ul>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <ul>
+                            <li class="indsatsmaal">Indsatsmål - Sociale egenskaber</li>
+                            <li><span class="part-goal">Delmål</span> - Tage kontakt til sin omgangskreds.</li>
+                            <li><span class="part-goal">Delmål</span> - Gå til holdsport en gang om ugen.</li>
+                        </ul>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <ul>
+                            <li class="indsatsmaal">Indsatsmål - Personlig hygejne</li>
+                            <li><span class="part-goal">Delmål</span> - Tage bad mindst 5 gange om ugen</li>
+                            <li><span class="part-goal">Delmål</span> - Børste tænder hver morgen og aften</li>
+                        </ul>
+                    </a>
+                </li>
+            </ul>
+            <a href="#" class="citizen-overview-showALL-link">Vis alle indsatsmål</a>
+
+            <!--CALENDAR-->
+            <h4>Kalender</h4>
+            <div id="citizen-overview-calendar"></div>
+
+        </div>
+    </div>
+
+    <!-- CREATE NOTE MODAL -->
+    <div class="modal fade newNoteModal" id="createNoteModal" tabindex="-1" role="dialog" aria-labelledby="overdueDeadlineModal" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Opret nyt notat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/" method="post" autocomplete="off">
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label>Dato og tid</label>
+                                <input id="Note_Createddate" type="datetime" name="name" class="form-control" />
+                            </div>
+                            <div id="Note_Id" style="display:none"></div>
+                            <!--<div class="form-group col">
+                                <label>Tid</label>
+                                <input type="time" name="name" class="form-control" required />
+                            </div>-->
+                            <div class="form-group col">
+                                <label>Type</label>
+                                <select id="Note_Type" class="form-control" required>
+                                    <option value="placeholder"></option>
+                                    <option value="type1">Type 1</option>
+                                    <option value="type2">Type 2</option>
+                                    <option value="type3">Type 3</option>
+                                    <option value="type4">Type 4</option>
+                                    <option value="type5">Type 5</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label>Oprettet af</label>
+                                <input id="Note_CreatedBy" type="text" name="name" class="form-control" readonly />
+                            </div>
+                            <div class="form-group col">
+                                <label>Stilling</label>
+                                <input id="Note_Profession" type="text" name="name" class="form-control" readonly />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <!--<div class="form-group col">
+                                <label>Overskrift</label>
+                                <input type="text" name="name" class="form-control" />
+                            </div>-->
+                            <!--<div class=" form-group col dropdown">
+                                <label>Overskrift</label>
+                                <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Dropdown trigger
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dLabel">
+                                    Type 1<br />
+                                    Type 2<br />
+                                    Type 3<br />
+                                    Type 4<br />
+                                    Type 5<br />
+                                    Type 6<br />
+                                </div>
+                            </div>-->
+                            <div class="form-group col">
+                                <label>Overskrift</label>
+                                <input type="text" class="form-control" id="Note_Headline" placeholder="Vælg overskrift(er)" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label>Notat</label>
+                                <textarea id="Note_Text" class="form-control autoExpand" rows='1' data-min-rows='1' placeholder="Skriv notat her"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row custom-modal-footer">
+
+                            <button type="button" class="btn btn-primary form-control share-note-btn">Del notat</button>
+
+                            <div class="save-draft-note-switch">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="customSwitch1">
+                                    <label class="custom-control-label" for="customSwitch1">Kladde</label>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-secondary form-control cancel-note-btn" data-dismiss="modal">Annuller</button>
+                            <button id="saveNote" type="button" class="btn btn-primary form-control save-note-btn" data-dismiss="modal">Gem</button>
+                        </div>
+                    </form>
+                </div>
+                <!--<div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Gem</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Luk</button>
+                </div>-->
+            </div>
+        </div>
+    </div>
+
+    <!--TOAST TO SHOW AFTER SAVE NOTE-->
+    <div class="toast" id="noteSave-toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-delay="4000">
+        <div class="toast-header">
+            <strong class="mr-auto">Notat</strong>
+            <small class="text-muted"></small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">Notatet er gemt</div>
+    </div>
+
+    <script>
+        function showToast() {
+            $('#noteSave-toast').toast('show');
+        };
+
+        function truncate(input) {
+            if (input.length > 30)
+                return input.substring(0, 30) + '...';
+            else
+                return input;
+        };
+    </script>
+
+    <script>
+        $("#saveNote").click(function () {
+            var NoteId = $('#Note_Id').val();
+
+            if (NoteId == null || NoteId == 'undefined' || NoteId == '') {
+                var guid = GetParameterValues('guid');
+                var citizen = JSON.parse(sessionStorage.getItem(guid));
+                var user = JSON.parse(sessionStorage.getItem("User"));
+                var Note_Type = $('#Note_Type').children("option:selected").index();
+                var Note_Headline = comboTree1.getSelectedItemsTitle().join();
+                var Note_Text = $.trim($("#Note_Text").val());
+
+                var document = {
+                    Log_UserId: user.GUID,
+                    CitizenId: guid,
+                    Description: Note_Text,
+                    DocumentType: Note_Type,
+                    Name: Note_Headline
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: sessionStorage.getItem("BaseUrl") + "api/Document",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(document),
+                    success: function (data) {
+                        if (data == 'true') {
+                            $('#citizen-overview-notes').html(GetCitizenDocument());
+                            setTimeout(showToast, 1000);
+                        }
+                    }
+                });
+            }
+            else {
+                var Note_Type = $('#Note_Type').children("option:selected").index();
+                var Note_Headline = comboTree1.getSelectedItemsTitle().join();
+                var Note_Text = $.trim($("#Note_Text").val());
+
+                var document = {
+                    Description: Note_Text,
+                    DocumentType: Note_Type,
+                    Name: Note_Headline
+                };
+
+                $.ajax({
+                    type: "PUT",
+                    url: sessionStorage.getItem("BaseUrl") + "api/Document/" + NoteId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(document),
+                    success: function (data) {
+                        if (data == 'true') {
+                            $('#citizen-overview-notes').html(GetCitizenDocument());
+                            setTimeout(showToast, 1000);
+                        }
+                    }
+                });
+            }
+        });
+
+    </script>
+
+    <!--SAMPLE DATA FOR COMBOBOX-->
+    <script type="text/javascript">
+
+        var SampleJSONData = [
+			{
+			    id: 'Afføring',
+			    title: 'Afføring'
+			}, {
+			    id: 'Afgørelse',
+			    title: 'Afgørelse'
+			}, {
+			    id: 'Afklaring',
+			    title: 'Afklaring'
+			}, {
+			    id: 'Aftale',
+			    title: 'Aftale'
+			}, {
+			    id: 'Angstanfald',
+			    title: 'Angstanfald'
+			}, {
+			    id: 'Behandler',
+			    title: 'Behandler'
+			}, {
+			    id: 'Besøg',
+			    title: 'Besøg'
+			}, {
+			    id: 'Budget',
+			    title: 'Budget'
+			}, {
+			    id: 'Dagbog',
+			    title: 'Dagbog'
+			}, {
+			    id: 'Døgnrytme',
+			    title: 'Døgnrytme'
+			}, {
+			    id: 'Familie',
+			    title: 'Familie'
+			}, {
+			    id: 'Ferie',
+			    title: 'Ferie'
+			}, {
+			    id: 'Flytning',
+			    title: 'Flytning'
+			}, {
+			    id: 'Fritid',
+			    title: 'Fritid'
+			}, {
+			    id: 'Hygiejne',
+			    title: 'Hygiejne'
+			}, {
+			    id: 'Kost',
+			    title: 'Kost'
+			}, {
+			    id: 'Medicin',
+			    title: 'Medicin'
+			}, {
+			    id: 'Misbrug',
+			    title: 'Misbrug'
+			}, {
+			    id: 'Motion',
+			    title: 'Motion'
+			}, {
+			    id: 'Motorik',
+			    title: 'Motorik'
+			}, {
+			    id: 'Opfølgning',
+			    title: 'Opfølgning'
+			}, {
+			    id: 'Partshøring',
+			    title: 'Partshøring'
+			}, {
+			    id: 'Risikoobservation',
+			    title: 'Risikoobservation'
+			}, {
+			    id: 'Samtykke',
+			    title: 'Samtykke'
+			}, {
+			    id: 'Skole',
+			    title: 'Skole'
+			}, {
+			    id: 'Tandlæge',
+			    title: 'Tandlæge'
+			}, {
+			    id: 'Trivsel',
+			    title: 'Trivsel'
+			}, {
+			    id: 'Træning',
+			    title: 'Træning'
+			}, {
+			    id: 'Værge',
+			    title: 'Værge'
+			}, {
+			    id: 'Økonomi',
+			    title: 'Økonomi'
+			}, {
+			    id: 'Notat1',
+			    title: 'Notat1'
+			}, {
+			    id: 'Notat2',
+			    title: 'Notat2'
+			}
+        ];
+        var comboTree1;
+
+
+        jQuery(document).ready(function ($) {
+
+            window.comboTree1 = $('#Note_Headline').comboTree({
+                source: SampleJSONData,
+                isMultiple: true
+            });
+
+        });
+
+        function GetObjectId(array, value) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].title == value) {
+                    return array[i].id;
+                }
+            }
+        };
+
+    </script>
+
+    <script>
+        function openTab(evt, tabName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+
+    <script>
+        function editContent(updatedDate, editlink, editcontent) {
+            // Change link text
+            var element = document.getElementById(editlink);
+            if (element.innerHTML === 'Rediger') element.innerHTML = 'Gem';
+            else {
+                element.innerHTML = 'Rediger';
+            }
+
+            // Change attribute
+            var Content = document.getElementById(editcontent);
+            var attributeStatus = Content.getAttribute('contenteditable');
+            if (attributeStatus === 'false') Content.setAttribute('contenteditable', 'true');
+            else {
+                var guid = GetParameterValues('guid');
+                $.ajax({
+                    type: "GET",
+                    url: sessionStorage.getItem("BaseUrl") + "api/Citizen/updatebackgroundinformation",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: {
+                        CitizenId: guid,
+                        Key: editcontent,
+                        value: Content.textContent
+                    },
+                    success: function (data) {
+                        Formatdate(updatedDate, data);
+                    }
+                });
+                Content.setAttribute('contenteditable', 'false');
+            }
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $(".showAll").click(function () {
+                $(this).text($(this).text() == 'Vis detaljer' ? 'Skjul detaljer' : 'Vis detaljer');
+                $(".TRhidden").toggleClass("TRshown");
+                $(".grid-arrows").toggleClass("arrow-down");
+                $(".grid-arrows").parent().toggleClass("icon-down-pointer");
+            });
+
+            $(".grid-arrows").click(function () {
+                $(this).toggleClass("arrow-down");
+                $(this).parent().toggleClass("icon-down-pointer");
+                $(this).parents(".grid-content").next().toggleClass("TRshown");
+            });
+
+            $("#registrationstart").click(function () {
+                window.location.replace('../KKSOF/medicin.htm');
+            })
+
+            $("#findRecords").click(function () {
+               
+            });
+
+            var tables = $("#medicin-tables").find(".table-caption");
+           // tables.hide();
+           // tables.next().hide();
+
+            $("#medicineName").change(function () {
+
+                var selectedVal = $(this).children("option:selected").text();
+
+               
+
+                var totalTables = $("#medicin-tables").find(".table-caption");
+                
+                $(totalTables).each(function (index) {
+                          
+
+                    if ($(this).text() == selectedVal) {
+
+                        $(this).show();
+                         $(this).next().show();
+
+                     }
+
+                    else{
+                      
+                         $(this).hide();
+                         $(this).next().hide();
+                    }
+
+
+                    if (selectedVal == "Alle") {                       
+                      
+                        $(this).show();
+                        $(this).next().show();
+
+                    }              
+                });
+            });
+
+            $("#gem").click(function () {
+                $("#medicin-tables").find("table").addClass("lockAllGray");
+                $("#Phenprocoumon-table tr td:last-child").replaceWith("<td>1 <a class='med-change' onclick='medChange(event)'><div class='blue-indicator inlineindic'></div></a></td>");
+            });
+
+            $("#oprat-btn").click(function(){
+                var totalTables1 = $("#medicin-tables").find(".table-caption");
+                $(totalTables1).each(function (index) {
+                            $(this).hide();
+                            $(this).next().hide();
+                });
+
+                $("#Phenprocoumon-table-mededit").show();
+                $("#Phenprocoumon-table-mededit").prev().prev().show();
+                $("#Phenprocoumon-table-mededit").removeClass("lockAllGray");
+            });
+
+        });
+
+
+        function medChange(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(e.target).replaceWith("<div class='yellow-indicator inlineindic'></div>");
+            $("#oprat-btn").show();
+        }
+
+        function medRemove(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(e.target).replaceWith("");
+       }
+
+
+        
+    </script>
+
+    <script>
+        /*TEXTAREA AUTO GROW WHEN ADDING MORE LINES*/
+        // Applied globally on all textareas with the "autoExpand" class
+        $(document)
+			.one('focus.autoExpand', 'textarea.autoExpand', function () {
+			    var savedValue = this.value;
+			    this.value = '';
+			    this.baseScrollHeight = this.scrollHeight;
+			    this.value = savedValue;
+			})
+			.on('input.autoExpand', 'textarea.autoExpand', function () {
+			    var minRows = this.getAttribute('data-min-rows') | 0, rows;
+			    this.rows = minRows;
+			    rows = Math.ceil((this.scrollHeight - this.baseScrollHeight) / 24);
+			    this.rows = minRows + rows;
+			});
+    </script>
+
+</body>
+
+
+</html>

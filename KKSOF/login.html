@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<script src="../Scripts/jquery-3.0.0.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/globalStyle.css">
+	<link rel="stylesheet" type="text/css" href="../css/login-page.css">
+	<title>DXC Social - Login</title>
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+			function GetApibaseUrl() {
+				$.getJSON("../settings.json", function (data) {
+					var items = [];
+					$.each(data, function (key, val) {
+						if (key = 'BaseUrl') {
+							sessionStorage.setItem("BaseUrl", val);
+						}
+					});
+					if (data != null && data != 'undefined') {
+						sessionStorage.setItem("BaseUrl", data.BaseUrl);
+					}
+					else {
+						sessionStorage.setItem("BaseUrl", './');
+					}
+				});
+			}
+			if (sessionStorage.getItem("BaseUrl") == null || sessionStorage.getItem("BaseUrl") == 'undefined') {
+				// GetApibaseUrl();
+			    sessionStorage.setItem("BaseUrl", "https://dxcsolutiondemoserver.azurewebsites.net/");
+			}
+
+			$('#loginForm').submit(function () {
+			    $('#login-btn').css("display", "none");
+			    $('#Login-ball-pulse').css("display", "block");
+			    
+				var Username = $('#txtUsername').val();
+				var Password = $('#txtPassword').val();
+				var url = sessionStorage.getItem("BaseUrl") + "api/user/validate/";
+				$.ajax({
+					type: "GET",
+					url: url,
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: {
+						username: Username,
+						password: Password
+					},
+					success: function (output) {
+						if (output == "Not Found") {
+							$('#divError').css("display", "block");
+							$('#txtUsername').val('')
+							$('#txtPassword').val('');
+							$('#login-btn').css("display", "block");
+							$('#Login-ball-pulse').css("display", "none");
+						}
+						else {
+							$('#divError').css("display", "none");
+							sessionStorage.setItem("User", JSON.stringify(output[0]));
+							var localstorageitem = localStorage.getItem('UserKey');
+							if (localstorageitem == null)
+								localStorage.setItem('UserKey', 'Vitae');
+							if (output[0].Usertype == 1) {
+								window.location.replace('../KKSOF/index.htm');
+							}
+							else {
+								window.location.replace('../KKSOF/overview_deliverer.htm');
+							}
+						}
+					}
+				});
+				return false;
+			});
+		});
+
+
+	</script>
+
+</head>
+<body>
+
+	<img src="../images/dxc_logo_hz_blk_rgb_300.png" alt="DXC Technology logo" class="DXC-logo" />
+
+	<div class="bar">VITAE</div>
+
+	<div class="form-container">
+		<h2>Login</h2>
+		<form id="loginForm">
+			<label for="brugernavn">Brugernavn</label>
+			<input id="txtUsername" type="text" name="brugernavn" placeholder="Indtast brugernavn" autocomplete="off" />
+
+			<label for="password">Adgangskode</label>
+			<input id="txtPassword" type="password" name="password" placeholder="Indtast adgangskode" autocomplete="off" />
+
+			<button id="btnLogin" type="submit">
+				<div id="login-btn">Log på</div>
+				
+				<div id="Login-ball-pulse" class="la-ball-pulse" style="display:none">
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</button>
+			<!--<input type="submit" id="btnLogin" value="Login" />-->
+
+			<div id="divError">Du har indtastet forkert brugernavn eller adgangskode</div>
+		</form>
+
+		<div class="form-footer">
+			<div class="footer-links"><a href="#">About us</a> | <a href="#">Disclaimer and legal notices</a></div>
+			<div class="copyright">© 2019 DXC Technology Scandihealth A/S. All rights reserved.</div>
+		</div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!--Bootstrap-->
+	<link rel="stylesheet" type="text/css" href="../Content/bootstrap.min.css" />
+	<script src="../Scripts/jquery-3.0.0.min.js"></script>
+	<script src="../Scripts/popper.min.js"></script>
+	<script src="../Scripts/bootstrap.min.js"></script>
+	<script src="../Scripts/jQuery.highlight.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/globalStyle.css">
+	<link rel="stylesheet" type="text/css" href="../css/nav.css">
+	<link rel="stylesheet" type="text/css" href="../css/top-bar.css">
+	<link rel="stylesheet" type="text/css" href="../css/dashboard.css">
+	<link rel="stylesheet" type="text/css" href="../css/search-citizen.css">
+	<link href="../css/div-oneline.css" rel="stylesheet" />
+
+	<!--forHighlight-->
+	<script src="../Scripts/jQuery.highlight.js"></script>
+	<script src="../Scripts/Master.js"></script>
+
+	<script src="../Scripts/all-fontAwesome.js"></script>
+	<!--Scripts for multiselect dropdown box-->
+	<script src="../Scripts/icontains.js"></script>
+	<script src="../Scripts/comboTreePlugin.js"></script>
+	<title>DXC Social</title>
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#formsearchcitizen').submit(function () {
+				var input = $('#txtsearch').val();
+				$.ajax({
+					type: "GET",
+					url: sessionStorage.getItem("BaseUrl") + "api/citizen/search/" + input,
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					success: function (data) {
+						$('#result').empty();
+						$.each(data, function (index, val) {
+							var Fullname = val.Firstname + ' ' + val.Lastname;
+							var PersonalId = val.PersonalIdNo;
+							var Address = val.Address + ', ' + val.City;
+							var rows = "<li><button type='button' data-toggle='tooltip' data-placement='top' title='Åbn borger i ny fane' onclick='OpeninNewTab(" + JSON.stringify(val) + ")'><i class='fas fa-external-link-alt'></i></button>" +
+
+								"<a class='search-result-link' href='../KKSOF/citizen.htm?guid=" + val.GUID + "&' onclick='CitizenSession(" + JSON.stringify(val) + ")'>" +
+								
+								"<div id='Fullname'>" + Fullname + "</div>" +
+
+								"<div id='PersonalId'>" + PersonalId + "</div>" +
+
+								"<div id='Address'>" + Address + "</div>" +
+
+								"</a></li> ";
+
+							$('#result').append(rows);
+							//Initialize tooltips
+							$('[data-toggle="tooltip"]').tooltip();
+						});
+					},
+					failure: function (data) {
+						$('#result').empty();
+						alert("No data Found");
+					}, //End of AJAX failure function
+					error: function (data) {
+						$('#result').empty();
+						alert("No data Found");
+					} //End of AJAX error function
+				});
+				return false;
+			});
+		});
+	</script>
+
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			var guid = GetParameterValues('guid');
+			var citizen = JSON.parse(sessionStorage.getItem(guid));
+			var user = JSON.parse(sessionStorage.getItem("User"));
+			if (citizen == null) {
+				var Overview = document.getElementById('Overblik');
+				var Sog = document.getElementById('Sog');
+				var Borger = document.getElementById('Borger');
+				//var Medicin = document.getElementById('Medicin');
+
+				if (user.Usertype == 1) {
+					Overview.setAttribute('href', '../KKSOF/index.htm');
+				} else {
+					Overview.setAttribute('href', '../KKSOF/overview_deliverer.htm');
+				}
+				Sog.setAttribute('href', '../KKSOF/search.htm');
+				Borger.setAttribute('href', '../KKSOF/citizen.htm');
+				//Medicin.setAttribute('href', '../KKSOF/medicin.htm');
+				$('#Borger').css("display", "none");
+				//$('#Medicin').css("display", "none");
+			}
+			else {
+				var Overview = document.getElementById('Overblik');
+				var Sog = document.getElementById('Sog');
+				var Borger = document.getElementById('Borger');
+				//var Medicin = document.getElementById('Medicin');
+
+				if (user.Usertype == 1) {
+					Overview.setAttribute('href', '../KKSOF/index.htm?guid=' + guid + '&');
+				} else {
+					Overview.setAttribute('href', '../KKSOF/overview_deliverer.htm?guid=' + guid + '&');
+				}
+				Sog.setAttribute('href', '../KKSOF/search.htm?guid=' + guid + '&');
+				Borger.setAttribute('href', '../KKSOF/citizen.htm?guid=' + guid + '&');
+				//Medicin.setAttribute('href', '../KKSOF/medicin.htm?guid=' + guid + '&');
+				$('#Borger').css("display", "grid");
+				//$('#Medicin').css("display", "grid");
+			}
+		});
+	</script>
+
+
+
+	<script type="text/javascript">
+		function CitizenSession(param) {
+			sessionStorage.setItem(param.GUID, JSON.stringify(param));
+		}
+	</script>
+
+	<script type="text/javascript">
+		function OpeninNewTab(param) {
+			sessionStorage.setItem(param.GUID, JSON.stringify(param));
+			window.open('../KKSOF/citizen.htm?guid=' + param.GUID + '&')
+		}
+	</script>
+
+	<script type="text/javascript">
+		function GetParameterValues(param) {
+			var url = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+			for (var i = 0; i < url.length; i++) {
+				var urlparam = url[i].split('=');
+				if (urlparam[0] == param) {
+					return urlparam[1];
+				}
+			}
+		}
+	</script>
+
+</head>
+
+<body>
+	<div class="top-bar">
+		<div class="logo-vitae">VITAE</div>
+		<div class="time-stamp">
+			<div id="current-date"></div>
+			<div id="current-month-year"></div>
+			<div id="current-day"></div>
+		</div>
+
+		<div class="btn-group" style="float: right;">
+			<a href="#" class="user-container" id="dropdownUser" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<div id="divUser" class="user-name"></div>
+				<div id="divRole" class="user-role"></div>
+				<i class="fas fa-chevron-down"></i>
+			</a>
+			<div class="dropdown-menu" aria-labelledby="dropdownUser">
+				<a class="dropdown-item" href="#"><i class="fas fa-user" style="margin-right: 10px;"></i>Profil</a>
+				<div class="dropdown-divider"></div>
+				<h6 class="dropdown-header">Skærmtilstand</h6>
+				<a class="dropdown-item" href="#">Normal tilstand</a>
+				<a class="dropdown-item" href="#">Høj kontrast</a>
+				<a class="dropdown-item" href="#">Nattetilstand</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" onclick="Logout()" href="#"><i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>Log ud</a>
+			</div>
+			<script>
+				function Logout() {
+					sessionStorage.clear();
+					localStorage.removeItem('UserKey');
+					var window1 = window.location.replace('../KKSOF/login.html');
+
+				}
+			</script>
+
+		</div>
+
+		<!-- Plus Dropdown-->
+		<!--<div class="dropdown">
+			<a href="#" id="plusDropdown" class="btn-plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="0,1"></a>
+			<div class="dropdown-menu" aria-labelledby="plusDropdown">
+				<h6 class="dropdown-header">Opret</h6>
+				<a class="dropdown-item dropdown-item-note" href="#"><i class="far fa-sticky-note"></i><div>Notat</div></a>
+				<a class="dropdown-item dropdown-item-message" href="#"><i class="far fa-envelope"></i><div>Besked</div></a>
+				<a class="dropdown-item dropdown-item-deadline" href="#"><i class="far fa-bell"></i><div>Frist</div></a>
+			</div>
+		</div>-->
+	</div>
+
+	<nav>
+		<a id="Overblik" class="menu-item">
+			<div class="menu-item-overblik"><i class="fas fa-tachometer-alt"></i></div>
+			<div>Overblik</div>
+		</a>
+		<a id="Sog" class="menu-item">
+			<div class="menu-item-search"><i class="fas fa-search"></i></div>
+			<div>Søg</div>
+		</a>
+		<a id="Borger" class="menu-item">
+			<div class="menu-item-citizen"><i class="fas fa-user-circle"></i></div>
+			<div>Borger</div>
+		</a>
+		<!--<a id="Medicin" class="menu-item">
+			<div class="menu-item-medicin"><i class="fas fa-first-aid"></i></div>
+			<div>Medicin</div>
+		</a>-->
+
+		<ul class="bottom-nav-icons">
+			<li>
+				<a id="hide-citizen" class="menu-item" href="#" onclick="$('#hideCitizen-overlay').fadeToggle()">
+					<div class="menu-item-session"><i class="fas fa-user-shield"></i></div>
+					<div>Skjul borger</div>
+				</a>
+			</li>
+			<li>
+				<a id="setting" class="menu-item" href="#">
+					<div class="menu-item-setting"><i class="fas fa-cog"></i></div>
+					<div>Indstillinger</div>
+				</a>
+			</li>
+		</ul>
+	</nav>
+
+	<!--HIDE CITIZEN OVERLAY-->
+	<div id="hideCitizen-overlay">
+		<i class="fas fa-user-shield"></i>
+	</div>
+
+	<div class="content-wrapper">
+		<form id="formsearchcitizen">
+			<h1>Find borger</h1>
+			<input type="text" id="txtsearch" name="search-citizen" placeholder="Søg på navn eller CPR nummer" class="search-citizen-field" autocomplete="off">
+			<input type="submit" value="Søg" class="search-btn" id="btnsearch">
+		</form>
+		<div class="dashboard-card search-citizen-list">
+			<h3 class="dashboard-card-header">Søgeresultat</h3>
+			<div class="dashboard-card-content">
+				<ul id="result">
+					<!--<li><div style="margin-right:100px; width:500px"></div></li>-->
+				</ul>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>

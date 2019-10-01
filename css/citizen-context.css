@@ -1,0 +1,98 @@
+.citizen-context {
+	display: grid;
+	grid-template-columns: repeat(11, 1fr) 40px;
+	grid-template-rows: 1fr;
+	grid-gap: 5px;
+	position: fixed;
+	left: 60px;
+	right: 0;
+	top: 50px;
+	height: 40px;
+	background-image: linear-gradient(to right, #fff, #f1f1f1);
+	font-size: .75rem;
+	align-items: center;
+	padding: 0 0 0 10px;
+}
+
+.context-citizen-name, .context-citizen-address {
+	display: grid;
+	grid-template-columns: 40px auto;
+	grid-template-rows: 1fr 1fr;
+	
+}
+
+.context-citizen-name {
+	grid-column: 1 / 3;
+}
+
+.context-citizen-address {
+	grid-column: 3 / 6;
+}
+
+.context-icon {
+	grid-row: 1 / 3;
+}
+
+.risk-container {
+	grid-column: 10 / 11;
+	color: darkorange;
+	padding: 2px 5px;
+	font-weight: bold;
+	transition: background-color 100ms linear;
+	align-self: stretch;
+	display: grid;
+	align-items: center;
+}
+
+.risk-container:hover {
+	cursor: pointer;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.cave-contagion-container {
+	grid-column: 11 / 12;
+	padding: 2px 5px;
+	font-weight: bold;
+	transition: background-color 100ms linear;
+	align-self: stretch;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr 1fr;
+}
+
+.cave-contagion-container:hover {
+	cursor: pointer;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.cave-info {
+	align-self: flex-end;
+}
+.contagion-info {
+	align-self: flex-start;
+}
+
+.citizen-age {
+	font-size: .9em;
+	font-weight: bold;
+	color: rgb(100, 100, 100);
+}
+
+#CloseCitizen {
+	grid-column: 12 / 13;
+	display: flex;
+	align-items: center;
+	width: 40px;
+	height: 40px;
+	font-size: 1rem;
+	transition: all 100ms linear;
+}
+
+#CloseCitizen svg {
+	display: block;
+	margin: auto;
+}
+
+#CloseCitizen:hover {
+	background-color: rgba(0, 0, 0, .1);
+}

@@ -1,0 +1,1414 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+	<!--Bootstrap-->
+	<link rel="stylesheet" type="text/css" href="../Content/bootstrap.min.css" />
+	<script src="../Scripts/jquery-3.0.0.min.js"></script>
+	<script src="../Scripts/popper.min.js"></script>
+	<script src="../Scripts/bootstrap.min.js"></script>
+	<!--forHighlight-->
+	<script src="../Scripts/jQuery.highlight.js"></script>
+	<!--Stylesheets-->
+	<link rel="stylesheet" type="text/css" href="../css/globalStyle.css">
+	<link rel="stylesheet" type="text/css" href="../css/nav.css">
+	<link rel="stylesheet" type="text/css" href="../css/top-bar.css">
+	<link rel="stylesheet" type="text/css" href="../css/citizen-context.css">
+	<link rel="stylesheet" type="text/css" href="../css/dashboard.css" />
+	<link rel="stylesheet" type="text/css" href="../css/search-citizen.css">
+	<link rel="stylesheet" type="text/css" href="../css/div-oneline.css" />
+	<!--  -->
+	<script src="../Scripts/Master.js"></script>
+	<script src="../Scripts/all-fontAwesome.js"></script>
+	<!--Scripts for multiselect dropdown box-->
+	<script src="../Scripts/icontains.js"></script>
+	<script src="../Scripts/comboTreePlugin.js"></script>
+	<title>DXC Social</title>
+
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			var guid = GetParameterValues('guid');
+			var citizen = JSON.parse(sessionStorage.getItem(guid));
+			var user = JSON.parse(sessionStorage.getItem("User"));
+			if (citizen == null) {
+				var Overview = document.getElementById('Overblik');
+				var Sog = document.getElementById('Sog');
+				var Borger = document.getElementById('Borger');
+				//var Medicin = document.getElementById('Medicin');
+
+				if (user.Usertype == 1) {
+					Overview.setAttribute('href', '../KKSOF/index.htm');
+				} else {
+					Overview.setAttribute('href', '../KKSOF/overview_deliverer.htm');
+				}
+				Sog.setAttribute('href', '../KKSOF/search.htm');
+				Borger.setAttribute('href', '../KKSOF/citizen.htm');
+				//Medicin.setAttribute('href', '../KKSOF/medicin.htm');
+				$('#Borger').css("display", "none");
+				//$('#Medicin').css("display", "none");
+			}
+			else {
+				var Overview = document.getElementById('Overblik');
+				var Sog = document.getElementById('Sog');
+				var Borger = document.getElementById('Borger');
+				//var Medicin = document.getElementById('Medicin');
+
+				if (user.Usertype == 1) {
+					Overview.setAttribute('href', '../KKSOF/index.htm?guid=' + guid + '&');
+				} else {
+					Overview.setAttribute('href', '../KKSOF/overview_deliverer.htm?guid=' + guid + '&');
+				}
+				Sog.setAttribute('href', '../KKSOF/search.htm?guid=' + guid + '&');
+				Borger.setAttribute('href', '../KKSOF/citizen.htm?guid=' + guid + '&');
+				//Medicin.setAttribute('href', '../KKSOF/medicin.htm?guid=' + guid + '&');
+				$('#Borger').css("display", "grid");
+				//$('#Medicin').css("display", "grid");
+			}
+		});
+	</script>
+
+	<!--deadline-->
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$.ajax({
+				type: "GET",
+				url: sessionStorage.getItem("BaseUrl") + "api/deadline",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					$('#deadlines').empty();
+					$.each(data, function (index, val) {
+						var Fullname = val.CitizenfirstName + ' ' + val.CitizenLastName;
+						var PersonalId = val.PersonalId;
+						var DeadlineDate = new Date(val.DeadlineDate);
+						var formatteddeadlineDate = ("0" + DeadlineDate.getDate()).slice(-2) + "-" + ("0" + (DeadlineDate.getMonth() + 1)).slice(-2) + "-" + DeadlineDate.getFullYear();
+						var Deadlinecolor = val.Deadlinecolor;
+						var DeadlineTitle = val.DeadlineTitle;
+						var DeadlineType = GetDeadlineType(val.Deadlinetype);
+						var User = val.UserName;
+						var rows = "<li><a href=# onclick='GetCitizenbyGUID(" + JSON.stringify(val.CitizenId) + ")'>" +
+							"<div class='deadline-date'>" + formatteddeadlineDate + "</div>" +
+							"<div target=" + Deadlinecolor + " class='deadline-color'></div>" +
+							"<div class='deadline-citizenName'>" + Fullname + "</div>" +
+							"<div class='deadline-citizenCPR'>" + PersonalId + "</div>" +
+							"<div class='deadline-type'>" + DeadlineType + "</div>" +
+							"<div class='deadline-responsible'>" + User + "</div>" +
+							"<div class='deadline-title'>" + DeadlineTitle + "</div>" +
+							"</a> </li> ";
+						$('#deadlines').append(rows);
+					});
+					$('#Load_Deadlines').css('display', 'none');
+					$('#deadlines').css('display', 'inline');
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+		});
+	</script>
+
+	<!--notes-->
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$.ajax({
+				type: "GET",
+				url: sessionStorage.getItem("BaseUrl") + "api/Document",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					$('#notes').empty();
+					$.each(data, function (index, val) {
+						var citizenName = val.CitizenName;
+						var PersonalId = val.CitizenId;
+						var Notedate = new Date(val.CreatedDate);
+						var formattedNoteDate = ("0" + Notedate.getDate()).slice(-2) + "-" + ("0" + (Notedate.getMonth() + 1)).slice(-2) + "-" + Notedate.getFullYear();
+						var NoteHeadline = truncate(val.Noteheadline);
+						var Notetype = GetNote(val.NoteType);
+						var Notetext = val.NoteText;
+						var Username = val.Username;
+						var rows = "<li><a href=#>" +
+							"<div class=\"noteColor\" target=" + val.NoteType + "></div>" +
+							"<div class=\"overview-note-date\">" + formattedNoteDate + "</div>" +
+							"<div class=\"overview-note-citizenName\">" + citizenName + "</div>" +
+							"<div class=\"overview-note-CPR\">" + PersonalId + "</div>" +
+							"<div class=\"overview-note-noteText\">" + Notetext + "</div>" +
+							"</a> </li> ";
+						if (index < 4) {
+							$('#notes').append(rows);
+						}
+					});
+					$('#Load_Notes').css('display', 'none');
+					$('#notes').css('display', 'inline');
+					filterdata();
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+		});
+	</script>
+
+	<!--users-->
+	<script type="text/javascript">
+		function GetUser() {
+			$.ajax({
+				type: "GET",
+				url: sessionStorage.getItem("BaseUrl") + "api/User",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					$.each(data, function (index, val) {
+						var Username = val.UserName;
+						var UserId = val.UserId;
+						var rows = "<option value=" + UserId + ">" + Username + "</option>";
+						$('#Search_CreatedBy').append(rows);
+
+						if (val.UserType == 2)
+						    var filteredrows = "<option value=" + UserId + ">" + Username + "</option>";
+						$('.select_user').append(filteredrows);
+
+						$('#Message-Search-responsible-User').append(rows);
+					});
+
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+		}
+
+		$(document).ready(function () {
+			GetUser();
+		});
+	</script>
+
+	<!--red-deadlines-->
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$.ajax({
+				type: "GET",
+				url: sessionStorage.getItem("BaseUrl") + "api/reddeadlines",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					$('#RedDeadlines').text('Du har ' + data.length + ' overskredne frister');
+					$('#RedDeadlineModel').empty();
+					$.each(data, function (index, val) {
+						var DeadlineColorEnum = val.Deadlinecolor;
+						var DeadlineDate = new Date(val.DeadlineDate);
+						var formattedDate = ("0" + DeadlineDate.getDate()).slice(-2) + "-" + ("0" + (DeadlineDate.getMonth() + 1)).slice(-2) + "-" + DeadlineDate.getFullYear();
+						var Title = val.DeadlineTitle;
+						var Fullname = val.CitizenfirstName + ' ' + val.CitizenLastName;
+						var PersonalId = val.PersonalId;
+						var DeadlineType = GetDeadlineType(val.Deadlinetype);
+						var User = val.UserName;
+						var rows = "<li><a href=#>" +
+							"<div class='deadline-date'>" + formattedDate + "</div>" +
+							"<div class='deadline-color' style='background-color: red;'></div>" +
+							"<div class='deadline-citizenName'>" + Fullname + "</div>" +
+							"<div class='deadline-citizenCPR'>" + PersonalId + "</div>" +
+							"<div class='deadline-type'>" + DeadlineType + "</div>" +
+							"<div class='deadline-responsible'>" + User + "</div>" +
+							"<div class='deadline-title'>" + Title + "</div>" +
+							"</a> <button class='btn-completeDeadline'>Udfør frist</button> </li> ";
+						$('#RedDeadlineModel').append(rows);
+					});
+				}
+			});
+		});
+	</script>
+
+	<!--citizen-Guid-->
+	<script type="text/javascript">
+		function GetParameterValues(param) {
+			var url = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+			for (var i = 0; i < url.length; i++) {
+				var urlparam = url[i].split('=');
+				if (urlparam[0] == param) {
+					return urlparam[1];
+				}
+			}
+		}
+	</script>
+
+	<!--All-deadlines-->
+	<script type="text/javascript">
+		$(document).ready(function () {
+			FilterAlldeadlinesData();
+		});
+	</script>
+
+	<!--all-messages-->
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$.ajax({
+				type: "GET",
+				url: sessionStorage.getItem("BaseUrl") + "api/allmessages",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					$('#Allmessages').empty();
+					$.each(data, function (index, val) {
+						var Fullname = val.Fullname;
+						var PersonalId = val.PersonalId;
+						var MessageDate = new Date(val.MessageDate);
+						var formattedMessageDate = ("0" + MessageDate.getDate()).slice(-2) + "-" + ("0" + (MessageDate.getMonth() + 1)).slice(-2) + "-" + MessageDate.getFullYear();
+
+						var status = GetStatus(val.Status);
+						var description = val.Description;
+						var MessageType = val.MessageType;
+						var MessageStatus = val.messageStatus;
+						if (val.Recipient == null)
+							var Recipient = '';
+						else {
+							var Recipient = val.Recipient;
+						}
+						var rows = "<li><a href='#' onclick='GetCitizenbyGUID(" + JSON.stringify(val.CitizenGUID) + ")'>" +
+							"<div class=\"message-date\">" + formattedMessageDate + "</div>" +
+							"<div class=\"message-status\">" + status + "</div>" +
+							"<div class=\"message-citizenName\">" + Fullname + "</div>" +
+							"<div class=\"message-citizenCPR\">" + PersonalId + "</div>" +
+							"<div class=\"message-type\">" + MessageType + "</div>" +
+							"<div class=\"message-messageStatus\">" + MessageStatus + "</div>" +
+							"<div class=\"message-recipient\">" + Recipient + "</div>" +
+							"<div class=\"message-description\">" + description + "</div>" +
+							"</a> </li> ";
+						if (index < 4) {
+							$('#Allmessages').append(rows);
+						}
+					});
+					$('#Load_Messages').css('display', 'none');
+					$('#Allmessages').css('display', 'inline');
+					filterMessagedata();
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+
+			$('#formdeadlinesearch').submit(function () {
+				FilterAlldeadlinesData();
+				return false;
+			});
+			$('#formmessagesearch').submit(function () {
+				filterMessagedata();
+				return false;
+			});
+			$('#formreddeadlinesearch').submit(function () {
+				FilterReddeadlinesData();
+				return false;
+			});
+			$('#formnotesearch').submit(function () {
+				filterdata();
+				return false;
+			});
+		});
+	</script>
+
+	<script>
+		function GetCitizenbyGUID(id) {
+			$.when($.ajax({
+				type: "GET",
+				url: sessionStorage.getItem("BaseUrl") + "api/citizen/getcitizenbyguid/" + id,
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+				}
+			})).done(function (data) {
+				sessionStorage.setItem(data[0].GUID, JSON.stringify(data[0]));
+				window.location.replace('../KKSOF/citizen.htm?guid=' + data[0].GUID + '&')
+			});
+
+		}
+	</script>
+
+	<script>
+		function GetNote(NoteType) {
+			if (NoteType == 1) {
+				return 'Tegn';
+			} else if (NoteType == 2) {
+				return 'Statusnotat';
+			} else if (NoteType == 3) {
+				return 'Medicin';
+			} else if (NoteType == 4) {
+				return 'Lægenotat';
+			} else if (NoteType == 5) {
+				return 'Hospital (Ind/Ud)';
+			} else if (NoteType == 6) {
+				return 'Personlige aftaler';
+			} else if (NoteType == 7) {
+				return 'Hændelse';
+			} else if (NoteType == 8) {
+				return 'Privatøkonomi';
+			}
+		};
+
+		function GetDeadlineType(Type) {
+			if (Type == 1) {
+				return 'Opfølgningsfrist';
+			} else if (Type == 2) {
+				return 'Sagsbehandlingsfrist';
+			} else if (Type == 3) {
+				return 'Kvitteringsfrist';
+			} else if (Type == 4) {
+				return 'Parthøringsfrist';
+			} else if (Type == 5) {
+				return 'Klagefrist';
+			}
+		};
+
+		function GetStatus(StatusType) {
+			if (StatusType == 1) {
+				return 'Sendt';
+			} else if (StatusType == 2) {
+				return 'Modtaget';
+			} else if (StatusType == 3) {
+				return 'Done';
+			}
+		};
+
+		function truncate(input) {
+			if (input.length > 20)
+				return input.substring(0, 20) + '...';
+			else
+				return input;
+		};
+
+		function truncateNoteText(input) {
+			if (input.length > 50)
+				return input.substring(0, 50) + '...';
+			else
+				return input;
+		};
+	</script>
+
+	<!--Filter-Notes-->
+	<script>
+		function filterdata() {
+			var Search_Note_Type = $('#Search_Note_Type').children("option:selected").index();
+			var Search_NoteHeadline = $('#Search_NoteHeadline').val();
+			var Search_NoteText = $('#Search_NoteText').val();
+			var Search_fromDate = $('#Search_fromDate').val();
+			var Search_ToDate = $('#Search_ToDate').val();
+			var Search_CreatedBy = $('#Search_CreatedBy').children("option:selected").val();
+
+			var documentData = {
+				Fromdate: Search_fromDate,
+				Todate: Search_ToDate,
+				DocType: Search_Note_Type,
+				Name: Search_NoteHeadline,
+				UserId: Search_CreatedBy,
+				NoteText: Search_NoteText
+			};
+
+			$.ajax({
+				type: "POST",
+				url: sessionStorage.getItem("BaseUrl") + "api/FilterDocuments",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				data: JSON.stringify(documentData),
+				success: function (data) {
+					$('#showallNotesData').empty();
+					$.each(data, function (index, val) {
+						var citizenName = val.Firstname + ' ' + val.Lastname;
+						var PersonalId = val.PersonalIdNo;
+						var Notedate = new Date(val.Createdtimestamp);
+						var formattedNoteDate = ("0" + Notedate.getDate()).slice(-2) + "-" + ("0" + (Notedate.getMonth() + 1)).slice(-2) + "-" + Notedate.getFullYear();
+						var NoteHeadline = truncate(val.Name);
+						var Notetype = GetNote(val.DocumentType);
+						var Notetext = val.Description;
+						var Username = val.UserFirstName + ' ' + val.UserLastName + ' (' + val.UserId + ')';
+
+						varFilterrows = "<div class='showallNotes-row'>" +
+							"<div class='noteColor' target=" + val.DocumentType + "></div>" +
+							"<div class='showallNotes-columnContent'>" +
+							" <div><input class='inputCheckboxes' type='checkbox' name='name' value='" + formattedNoteDate + '&;' + Notetype + '&;' + truncateNoteText(Notetext) + '&;' + val.CitizenId + "' /></div> " +
+							"<div class='columnContent-date'>" + formattedNoteDate + "</div>" +
+							"<div class='columnContent-CPR'>" + PersonalId + "</div>" +
+							"<div class='columnContent-citizenName'>" + citizenName + "</div>" +
+							"<div class='columnContent-noteType'>" + Notetype + "</div>" +
+							"<div class='columnContent-noteHeaders'>" + NoteHeadline.replace(/,/g, ', ') + "</div>" +
+							"<div class='columnContent-'>" + Username + "</div>" +
+							"</div>" +
+							"<div class='showallNotes-noteContent'>" + Notetext + "</div>" +
+							"</div>";
+						$('#showallNotesData').append(varFilterrows);
+					});
+					if (Search_NoteText != null && Search_NoteText != '') {
+						$('.columnContent-date').highlight(Search_NoteText);
+						$('.columnContent-CPR').highlight(Search_NoteText);
+						$('.columnContent-citizenName').highlight(Search_NoteText);
+						$('.columnContent-noteType').highlight(Search_NoteText);
+						$('.columnContent-noteHeaders').highlight(Search_NoteText);
+						$('.columnContent-').highlight(Search_NoteText);
+						$('.showallNotes-noteContent').highlight(Search_NoteText);
+					}
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+
+		}
+	</script>
+
+	<!--filter-Messages-->
+	<script>
+		function filterMessagedata() {
+			var Search_message_type = $('#Search_message_type').children("option:selected").val();
+			var Search_message_status = $('#Search_message_status').children("option:selected").val();
+			var Search_message_Text = $('#Search_message_Text').val();
+			var Search_message_citizenInfo = $('#Search_message_citizenInfo').val();
+			var Search_message_fromDate = $('#Search_message_fromDate').val();
+			var Search_message_ToDate = $('#Search_message_ToDate').val();
+			var Search_message_responsibleUser = $('#Message-Search-responsible-User').children("option:selected").val();
+
+			var messageData = {
+				Fromdate: Search_message_fromDate,
+				Todate: Search_message_ToDate,
+				type: Search_message_type,
+				messageStatus: Search_message_status,
+				citizenInfo: Search_message_citizenInfo,
+				text: Search_message_Text,
+				Responsible: Search_message_responsibleUser
+			};
+
+			$.ajax({
+				type: "POST",
+				url: sessionStorage.getItem("BaseUrl") + "api/FilterMessages",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				data: JSON.stringify(messageData),
+				success: function (data) {
+					$('#AllmessagesModel').empty();
+					$.each(data, function (index, val) {
+						var citizenName = val.Firstname + ' ' + val.Lastname;
+						var PersonalId = val.PersonalIdNo;
+						var MessageType = val.MessageType;
+						var Messagedate = new Date(val.Createdtimestamp);
+						var formattedMessageDate = ("0" + Messagedate.getDate()).slice(-2) + "-" + ("0" + (Messagedate.getMonth() + 1)).slice(-2) + "-" + Messagedate.getFullYear();
+						var MessageStatus = val.MessageStatus;
+						var status = GetStatus(val.Status);
+						var description = val.Description;
+						if (val.UserId == null)
+							var Recipient = "";
+						else {
+							var Recipient = val.UserFirstName + ' ' + val.UserLastName + ' (' + val.UserId + ')';
+						}
+
+						var filteredrows = "<li><a href=# onclick='GetCitizenbyGUID(" + JSON.stringify(val.CitizenId) + ")'>" +
+							"<div  class=\"message-date filter-message-date\">" + formattedMessageDate + "</div>" +
+							"<div class=\"message-status filter-message-status\">" + status + "</div>" +
+							"<div  class=\"message-citizenName filter-message-citizenName\">" + citizenName + "</div>" +
+							"<div  class=\"message-citizenCPR filter-message-citizenCPR\">" + PersonalId + "</div>" +
+							"<div  class=\"message-type filter-message-type\">" + MessageType + "</div>" +
+							"<div  class=\"message-messageStatus filter-message-messageStatus\">" + MessageStatus + "</div>" +
+							"<div  class=\"message-recipient filter-message-recipient\">" + Recipient + "</div>" +
+							"<div  class=\"message-description filter-message-description\">" + description + "</div>" +
+							"</a> </li> ";
+						$('#AllmessagesModel').append(filteredrows);
+					});
+					if (Search_message_Text != null && Search_message_Text != '') {
+						$('.filter-message-date').highlight(Search_message_Text);
+						$('.filter-message-status').highlight(Search_message_Text);
+						$('.filter-message-citizenName').highlight(Search_message_Text);
+						$('.filter-message-citizenCPR').highlight(Search_message_Text);
+						$('.filter-message-type').highlight(Search_message_Text);
+						$('.filter-message-messageStatus').highlight(Search_message_Text);
+						$('.filter-message-recipient').highlight(Search_message_Text);
+						$('.filter-message-description').highlight(Search_message_Text);
+					}
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+
+		}
+
+		function clearMessagefilter() {
+		}
+	</script>
+
+	<!--filter-deadlines-->
+	<script>
+		function FilterAlldeadlinesData() {
+			var Search_AllDeadline_citizenInfo = $('#Search_AllDeadline_citizenInfo').val();
+
+			var deadlineData = {
+				citizenInfo: Search_AllDeadline_citizenInfo,
+				isRedDeadline: false
+			}
+
+			$.ajax({
+				type: "POST",
+				url: sessionStorage.getItem("BaseUrl") + "api/FilterDeadlines",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				data: JSON.stringify(deadlineData),
+				success: function (data) {
+					$('#Alldeadlines').empty();
+					$.each(data, function (index, val) {
+						var Fullname = val.Firstname + ' ' + val.Lastname;
+						var PersonalId = val.PersonalIdNo;
+						var DeadlineDate = new Date(val.DeadlineDate);
+						var formatteddeadlineDate = ("0" + DeadlineDate.getDate()).slice(-2) + "-" + ("0" + (DeadlineDate.getMonth() + 1)).slice(-2) + "-" + DeadlineDate.getFullYear();
+						var Deadlinecolor = val.DeadlineColorEnum;
+						var DeadlineTitle = val.Title;
+						var DeadlineType = GetDeadlineType(val.DeadlineOwnertype);
+						var User = val.UserFirstName + ' ' + val.UserLastName + ' (' + val.UserId + ')';
+
+						var rows = "<li><a href=# onclick='GetCitizenbyGUID(" + JSON.stringify(val.CitizenId) + ")'>" +
+							"<div class='deadline-date'>" + formatteddeadlineDate + "</div>" +
+							"<div target=" + Deadlinecolor + " class='deadline-color'></div>" +
+							"<div class='deadline-citizenName'>" + Fullname + "</div>" +
+							"<div class='deadline-citizenCPR'>" + PersonalId + "</div>" +
+							"<div class='deadline-type'>" + DeadlineType + "</div>" +
+							"<div class='deadline-responsible'>" + User + "</div>" +
+							"<div class='deadline-title'>" + DeadlineTitle + "</div>" +
+							"</a> <button class='btn-completeDeadline'>Udfør frist</button> </li> ";
+
+						$('#Alldeadlines').append(rows);
+					});
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+		};
+
+
+		function FilterReddeadlinesData() {
+			var Search_RedDeadline_citizenInfo = $('#Search_RedDeadline_citizenInfo').val();
+
+			var deadlineData = {
+				citizenInfo: Search_RedDeadline_citizenInfo,
+				isRedDeadline: true
+			}
+
+			$.ajax({
+				type: "POST",
+				url: sessionStorage.getItem("BaseUrl") + "api/FilterDeadlines",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				data: JSON.stringify(deadlineData),
+				success: function (data) {
+					$('#RedDeadlineModel').empty();
+					$.each(data, function (index, val) {
+						var Fullname = val.Firstname + ' ' + val.Lastname;
+						var PersonalId = val.PersonalIdNo;
+						var DeadlineDate = new Date(val.DeadlineDate);
+						var formatteddeadlineDate = ("0" + DeadlineDate.getDate()).slice(-2) + "-" + ("0" + (DeadlineDate.getMonth() + 1)).slice(-2) + "-" + DeadlineDate.getFullYear();
+						var Deadlinecolor = val.DeadlineColorEnum;
+						var DeadlineTitle = val.Title;
+						var DeadlineType = GetDeadlineType(val.DeadlineOwnertype);
+						var User = val.UserFirstName + ' ' + val.UserLastName + ' (' + val.UserId + ')';
+
+						var rows = "<li><a href=#>" +
+							"<div class='deadline-date'>" + formatteddeadlineDate + "</div>" +
+							"<div target=" + Deadlinecolor + " class='deadline-color'></div>" +
+							"<div class='deadline-citizenName'>" + Fullname + "</div>" +
+							"<div class='deadline-citizenCPR'>" + PersonalId + "</div>" +
+							"<div class='deadline-type'>" + DeadlineType + "</div>" +
+							"<div class='deadline-responsible'>" + User + "</div>" +
+							"<div class='deadline-title'>" + DeadlineTitle + "</div>" +
+							"</a> <button class='btn-completeDeadline'>Udfør frist</button> </li> ";
+
+						$('#RedDeadlineModel').append(rows);
+					});
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+		};
+	</script>
+
+</head>
+
+<body>
+
+	<div class="top-bar">
+		<div class="logo-vitae">VITAE</div>
+		<div class="time-stamp">
+			<div id="current-date"></div>
+			<div id="current-month-year"></div>
+			<div id="current-day"></div>
+		</div>
+
+		<div class="btn-group" style="float: right;">
+			<a href="#" class="user-container" id="dropdownUser" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<div id="divUser" class="user-name"></div>
+				<div id="divRole" class="user-role"></div>
+				<i class="fas fa-chevron-down"></i>
+			</a>
+			<div class="dropdown-menu" aria-labelledby="dropdownUser">
+				<a class="dropdown-item" href="#"><i class="fas fa-user" style="margin-right: 10px;"></i>Profil</a>
+				<div class="dropdown-divider"></div>
+				<h6 class="dropdown-header">Skærmtilstand</h6>
+				<a class="dropdown-item" href="#">Normal tilstand</a>
+				<a class="dropdown-item" href="#">Høj kontrast</a>
+				<a class="dropdown-item" href="#">Nattetilstand</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" onclick="Logout()" href="#"><i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>Log ud</a>
+			</div>
+
+            <script>
+                function Logout() {                    
+                    sessionStorage.clear();
+                    localStorage.removeItem('UserKey');
+                    var window1 = window.location.replace('../KKSOF/login.html');
+
+                }
+            </script>
+
+		</div>
+
+		<div class="btn-group" style="float: right;">
+			<a href="#" class="change-overview" id="dropdownOverview" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Team overblik<i class="fas fa-chevron-down"></i></a>
+			<div class="dropdown-menu" aria-labelledby="dropdownOverview">
+				<h6 class="dropdown-header">Vælg overblik</h6>
+				<a class="dropdown-item" href="#">Team overblik</a>
+				<a class="dropdown-item" href="#">Mit overblik</a>
+				<a class="dropdown-item" href="#">Enhedsoverblik</a>
+			</div>
+		</div>
+
+		<!-- Plus Dropdown-->
+		<!--<div class="dropdown">
+			<a href="#" id="plusDropdown" class="btn-plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="0,1"></a>
+			<div class="dropdown-menu" aria-labelledby="plusDropdown">
+				<h6 class="dropdown-header">Opret</h6>
+				<a class="dropdown-item dropdown-item-note" href="#"><i class="far fa-sticky-note"></i><div>Notat</div></a>
+				<a class="dropdown-item dropdown-item-message" href="#"><i class="far fa-envelope"></i><div>Besked</div></a>
+				<a class="dropdown-item dropdown-item-deadline" href="#"><i class="far fa-bell"></i><div>Frist</div></a>
+			</div>
+		</div>-->
+	</div>
+
+	<nav>
+		<a id="Overblik" class="menu-item">
+			<div class="menu-item-overblik"><i class="fas fa-tachometer-alt"></i></div>
+			<div>Overblik</div>
+		</a>
+		<a id="Sog" class="menu-item">
+			<div class="menu-item-search"><i class="fas fa-search"></i></div>
+			<div>Søg</div>
+		</a>
+		<a id="Borger" class="menu-item">
+			<div class="menu-item-citizen"><i class="fas fa-user-circle"></i></div>
+			<div>Borger</div>
+		</a>
+		<!--<a id="Medicin" class="menu-item">
+			<div class="menu-item-medicin"><i class="fas fa-first-aid"></i></div>
+			<div>Medicin</div>
+		</a>-->
+
+		<ul class="bottom-nav-icons">
+			<li>
+				<a id="hide-citizen" class="menu-item" href="#" onclick="$('#hideCitizen-overlay').fadeToggle()">
+					<div class="menu-item-session"><i class="fas fa-user-shield"></i></div>
+					<div>Skjul borger</div>
+				</a>
+			</li>
+			<li>
+				<a id="setting" class="menu-item" href="#">
+					<div class="menu-item-setting"><i class="fas fa-cog"></i></div>
+					<div>Indstillinger</div>
+				</a>
+			</li>
+		</ul>
+	</nav>
+
+	<!--HIDE CITIZEN OVERLAY-->
+	<div id="hideCitizen-overlay">
+		<i class="fas fa-user-shield"></i>
+	</div>
+
+
+	<div class="content-wrapper">
+		<div class="dashboard-container">
+			<!--DEADLINES-->
+			<div class="dashboard-card deadlines">
+				<div class="dashboard-card-header">
+					<h3>Frister</h3>
+					<a href="" class="dashboard-card-header-link dashboard-overdue-deadline" data-toggle="modal" data-target="#allDeadlinesModal">Vis alle frister</a>
+				</div>
+				<div class="dashboard-card-content">
+					<ul>
+						<li>
+							<a id="RedDeadlines" href="#" class="dashboard-overdue-deadline" data-toggle="modal" data-target="#overdueDeadlineModal"></a>
+						</li>
+					</ul>
+
+					<!--Columns-->
+					<div class="column-headers-overview deadlines-column-headers-overview">
+						<div>Dato / Status</div><!--Leave empty for note color-->
+						<div>Navn / CPR</div>
+						<div>Type / Oprettet af</div>
+						<div>Frist navn</div>
+					</div>
+
+					<div id="Load_Deadlines" class="la-ball-pulse"><div></div><div></div><div></div></div>
+					<ul id="deadlines" style="display:none"></ul>
+				</div>
+				<!-- Overdue Deadline Modal -->
+				<div class="modal fade deadlineModal" id="overdueDeadlineModal" tabindex="-1" role="dialog" aria-labelledby="overdueDeadlineModal" aria-hidden="true">
+					<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Overskredne frister</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<!-- Deadline search form -->
+								<form id="formreddeadlinesearch">
+									<div class="deadline-search-type">
+										<label for="">Type</label>
+										<select id="" class="">
+											<option value=""></option>
+											<option value="">Opfølgningsfrist</option>
+											<option value="">Sagsbehandlingsfrist</option>
+											<option value="">Kvitteringsfrist</option>
+											<option value="">Parthøringsfrist</option>
+											<option value="">Klagefrist</option>
+										</select>
+									</div>
+									<div class="">
+										<label for="">Navn eller CPR nummer</label>
+										<input id="Search_RedDeadline_citizenInfo" type="text" placeholder="Navn eller CPR nummer" autocomplete="off" />
+									</div>
+									<div class="">
+										<label for="fromDate">Fra</label>
+										<input id="" type="date" name="fromDate" />
+									</div>
+									<div class="">
+										<label for="toDate">Til</label>
+										<input id="" type="date" name="toDate" />
+									</div>
+									<div class="">
+										<label for="freetext">Fritekst</label>
+										<input id="" type="text" name="freetext" autocomplete="off" />
+									</div>
+									<div class="deadline-checkboxes">
+										<div class="checkbox-group">
+											<label for="red">Rød</label>
+											<input type="checkbox" name="red" />
+										</div>
+										<div class="checkbox-group">
+											<label for="yellow">Gul</label>
+											<input type="checkbox" name="yellow" />
+										</div>
+										<div class="checkbox-group">
+											<label for="green">Grøn</label>
+											<input type="checkbox" name="green" />
+										</div>
+									</div>
+									<input type="submit" name="Submit" value="Søg" class="btn form-search-btn" />
+								</form>
+								<div class="columnHeaders-deadlineModal-overview">
+									<div>Dato/Status</div>
+									<div>Navn/CPR</div>
+									<div>Type/Oprettet af</div>
+									<div>Frist navn</div>
+								</div>
+								<ul id="RedDeadlineModel"></ul>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal">Luk</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- All Deadlines Modal -->
+				<div class="modal fade deadlineModal" id="allDeadlinesModal" tabindex="-1" role="dialog" aria-labelledby="allDeadlinesModal" aria-hidden="true">
+					<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Alle frister</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<!-- Deadline search form -->
+								<form id="formdeadlinesearch">
+									<div class="deadline-search-type">
+										<label for="">Type</label>
+										<select>
+											<option value=""></option>
+											<option value="">Opfølgningsfrist</option>
+											<option value="">Sagsbehandlingsfrist</option>
+											<option value="">Kvitteringsfrist</option>
+											<option value="">Parthøringsfrist</option>
+											<option value="">Klagefrist</option>
+										</select>
+									</div>
+									<div>
+										<label for="">Navn eller CPR nummer</label>
+										<input id="Search_AllDeadline_citizenInfo" type="text" placeholder="Navn eller CPR nummer" autocomplete="off" />
+									</div>
+									<div>
+										<label for="freetext">Fritekst</label>
+										<input id="" type="text" name="freetext" autocomplete="off" />
+									</div>
+									<div>
+										<label for="fromDate">Fra</label>
+										<input id="" type="date" name="fromDate" />
+									</div>
+									<div>
+										<label for="toDate">Til</label>
+										<input id="" type="date" name="toDate" />
+									</div>
+									<div class="deadline-checkboxes">
+										<div class="checkbox-group">
+											<label for="red">Rød</label>
+											<input id="" type="checkbox" name="red" />
+										</div>
+										<div class="checkbox-group">
+											<label for="yellow">Gul</label>
+											<input id="" type="checkbox" name="yellow" />
+										</div>
+										<div class="checkbox-group">
+											<label for="green">Grøn</label>
+											<input id="" type="checkbox" name="green" />
+										</div>
+									</div>
+									<input type="submit" name="Submit" value="Søg" class="btn form-search-btn" />
+								</form>
+								<div class="columnHeaders-deadlineModal-overview">
+									<div>Dato/Status</div>
+									<div>Navn/CPR</div>
+									<div>Type/Oprettet af</div>
+									<div>Frist navn</div>
+								</div>
+								<ul id="Alldeadlines"></ul>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal">Luk</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<!--MESSAGES-->
+			<div class="dashboard-card messages">
+				<div class="dashboard-card-header">
+					<h3>Beskeder</h3>
+					<a href="" class="dashboard-card-header-link" data-toggle="modal" data-target="#messagesModal">Vis alle beskeder</a>
+				</div>
+				<div class="dashboard-card-content">
+
+					<!--Columns-->
+					<div class="column-headers-overview messages-column-headers-overview">
+						<div>Dato</div>
+						<div>Navn / CPR</div>
+						<div>Type / Status</div>
+						<div>Modtager</div>
+						<div>Handling</div>
+					</div>
+
+					<div id="Load_Messages" class="la-ball-pulse"><div></div><div></div><div></div></div>
+
+					<ul id="Allmessages" style="display:none"></ul>
+				</div>
+
+				<!--Message modal-->
+				<div class="modal fade messagesModal" id="messagesModal" tabindex="-1" role="dialog" aria-labelledby="messagesModal" aria-hidden="true">
+					<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Beskeder</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearMessagefilter()">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<form id="formmessagesearch">
+									<div class="messages-search-type">
+										<label for="">Type</label>
+										<select id="Search_message_type" class="form-control">
+											<option value=""></option>
+											<option value="Notat">Notat</option>
+											<option value="Risikovurdering">Risikovurdering</option>
+											<option value="Meddelelser">Meddelelser</option>
+											<option value="Digital post">Digital post</option>
+											<option value="Kalenderaftaler">Kalenderaftaler</option>
+											<option value="Delmål">Delmål</option>
+											<option value="Statusnotat">Statusnotat</option>
+										</select>
+									</div>
+									<div class="messages-search-messageStatus">
+										<label for="">Status</label>
+										<select id="Search_message_status" class="form-control">
+											<option value=""></option>
+											<option value="ubehandlet">Ubehandlet</option>
+											<option value="igangsat">Igangsat</option>
+											<option value="behandlet">Behandlet</option>
+										</select>
+									</div>
+									<div class="messages-search-nameCPR">
+										<label for="">Navn eller CPR nummer</label>
+										<input id="Search_message_citizenInfo" type="text" placeholder="Navn eller CPR nummer" autocomplete="off" />
+									</div>
+									<div class="messages-search-fromdate">
+										<label for="fromDate">Fra</label>
+										<input id="Search_message_fromDate" type="date" name="fromDate" />
+									</div>
+									<div class="messages-search-todate">
+										<label for="toDate">Til</label>
+										<input id="Search_message_ToDate" type="date" name="toDate" />
+									</div>
+									<div class="messages-search-freetext">
+										<label for="freetext">Fritekst</label>
+										<input id="Search_message_Text" type="text" name="freetext" autocomplete="off" />
+									</div>
+									<div>
+										<label>Ansvarlig</label>
+										<select id="Message-Search-responsible-User">
+											<option value=""></option>
+										</select>
+									</div>
+									<input type="submit" name="Submit" value="Søg" class="btn form-search-btn" />
+								</form>
+								<div class="columnHeaders-messagesModal-overviewDeliverer">
+									<div>Dato</div>
+									<div>Navn/CPR</div>
+									<div>Type/Status</div>
+									<div>Modtager</div>
+									<div>Handling</div>
+								</div>
+								<ul id="AllmessagesModel"></ul>
+							</div>
+							<div class="modal-footer">
+								<button type="button" onclick="clearMessagefilter()" class="btn btn-primary" data-dismiss="modal">Luk</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<!--NOTES-->
+			<div class="dashboard-card notes">
+				<div class="dashboard-card-header">
+					<h3>Notater</h3>
+					<a href="" class="dashboard-card-header-link" data-toggle="modal" data-target="#notesModal">Vis alle notater</a>
+				</div>
+				<div class="dashboard-card-content">
+
+					<!--Columns-->
+					<div class="column-headers-overview notes-column-headers-overview">
+						<div></div><!--Leave empty for note color-->
+						<div>Dato</div>
+						<div>Navn / CPR</div>
+						<div>Notat indhold</div>
+					</div>
+
+					<div id="Load_Notes" class="la-ball-pulse"><div></div><div></div><div></div></div>
+					<ul id="notes" style="display:none"></ul>
+				</div>
+
+				<!--Notes modal-->
+				<div class="modal fade notesModal" id="notesModal" tabindex="-1" role="dialog" aria-labelledby="notesModal" aria-hidden="true">
+					<div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Notater</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+
+							<div class="modal-body">
+								<form id="formnotesearch">
+									<div>
+										<label for="type">Type</label>
+										<select id="Search_Note_Type">
+											<option value=""></option>
+											<option value="Tegn">Tegn</option>
+											<option value="Statusnotat">Statusnotat</option>
+											<option value="Medicin">Medicin</option>
+											<option value="Lægenotat">Lægenotat</option>
+											<option value="Hospital (Ind/Ud)">Hospital (Ind/Ud)</option>
+											<option value="Personlige aftaler">Personlige aftaler</option>
+											<option value="Hændelse">Hændelse</option>
+											<option value="Privatøkonomi">Privatøkonomi</option>
+										</select>
+									</div>
+									<div>
+										<label for="header">Overskrift</label>
+										<input id="Search_NoteHeadline" type="text" name="freetext" autocomplete="off" />
+									</div>
+									<div>
+										<label for="freetext">Fritekst</label>
+										<input id="Search_NoteText" type="text" name="freetext" autocomplete="off" />
+									</div>
+									<div>
+										<label for="fromDate">Fra</label>
+										<input id="Search_fromDate" type="date" name="fromDate" />
+									</div>
+									<div>
+										<label for="toDate">Til</label>
+										<input id="Search_ToDate" type="date" name="toDate" />
+									</div>
+									<div>
+										<label for="createdBy">Oprettet af</label>
+										<select id="Search_CreatedBy">
+											<option value=""></option>
+										</select>
+									</div>
+									<div class="noteSearchBtnContainer">
+										<input type="submit" name="Submit" value="Søg" class="btn" />
+									</div>
+								</form>
+
+								<div class="showallNotes-table">
+									<div class="showallNotes-columnHeaders">
+										<div>Vælg</div>
+										<div class="columnHeader-date">Dato</div>
+										<div class="columnHeader-CPR">CPR</div>
+										<div class="columnHeader-citizenName">Borger</div>
+										<div class="columnHeader-noteType">Type</div>
+										<div class="columnHeader-noteHeaders">Overskrifter</div>
+										<div class="columnHeader-">Oprettet af</div>
+									</div>
+									<div id="showallNotesData">
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn mr-auto" id="btn-shareNote" onclick="toggleShareNotePopup()"><i class="fas fa-share"></i>Del</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal">Annuller</button>
+
+								<!-- Share note container -->
+								<div class="share-popup" id="shareNote-container">
+									<div class="shareNote-popup-topBar" onclick="toggleShareNotePopup()">
+										<div>Del notat</div>
+										<span>&times;</span>
+									</div>
+									<h4>Følgende notater deles</h4>
+									<ul class="selected-notes-share" id="SharedNotes"></ul>
+									<h4>Vælg modtagere</h4>
+									<div id="recipient-list">
+										<div class="recipient-row">
+											<div class="col-group">
+												<label>Org. enhed</label>
+												<select>
+													<option value="Org. 1">Org. enhed 1</option>
+													<option value="Org. 2">Org. enhed 2</option>
+													<option value="Org. 3">Org. enhed 3</option>
+													<option value="Org. 4">Org. enhed 4</option>
+												</select>
+											</div>
+											<div class="col-group">
+												<label>Bruger</label>
+												<select class="select_user">
+													<option value=""></option>
+												</select>
+											</div>
+											<div></div> <!--Keep empty-->
+										</div>
+									</div>
+
+									<button type="button" onclick="ShareSelectedNotes()" class="btn"><i class="fas fa-share"></i>Del</button>
+									<button type="button" class="btn" id="add-recipient-Btn"><i class="fas fa-user-plus"></i>Tilføj modtager</button>
+
+								</div><!-- End of share note container -->
+
+								<script>
+									function toggleShareNotePopup() {
+										$("#SharedNotes").empty();
+										$('.inputCheckboxes:checked').each(function () {
+											var noteArray = $(this).attr('value').split('&;');
+											var row = "<li>" +
+												"<div>" + noteArray[0] + "</div>" +
+												"<div>" + noteArray[1] + "</div>" +
+												"<div>" + noteArray[2] + "</div>" +
+												"<div style='display:none'>" + noteArray[3] + "</div>" +
+												"<input class='notes-shared-data' value='" + noteArray[3] + "' type='checkbox' checked style='align-self: center; justify-self: center;' />" +
+												"</li>";
+											$("#SharedNotes").append(row);
+										});
+										$("#shareNote-container").toggle(200);
+									}
+
+									$(function () {
+										$("#add-recipient-Btn").click(function () {
+											$("#recipient-list").append('<div class="recipient-row"><div class="col-group"><label>Org. enhed</label><select><option value="Org. 1">Org. enhed 1</option><option value="Org. 2">Org. enhed 2</option><option value="Org. 3">Org. enhed 3</option></select></div><div class="col-group"><Label>Bruger</Label><select class="select_user"><option value=""></option></select></div><div class="col-group remove-Btn" onclick="$(this).closest(\'.recipient-row\').remove();"><i class="fas fa-trash"></i></div></div>');
+											GetUser();
+										});
+									});
+
+
+
+									function ShareSelectedNotes() {
+
+										var selectedusers = [];
+										$('.select_user').each(function () {
+											var value = $(this).children("option:selected").val();
+											if (value != '')
+												selectedusers.push(value);
+										});
+
+										for (var i = 0; i < selectedusers.length; i++) {
+											$('.notes-shared-data:checked').each(function () {
+
+												var CitizenGuid = $(this).attr('value');
+												var user = JSON.parse(sessionStorage.getItem("User"));
+
+												var message = {
+													Log_UserId: user.GUID,
+													CitizenId: CitizenGuid,
+													Description: "Delt notat",
+													MessageType: "Notat",
+													MessageStatus: "Ubehandlet",
+													recipient: selectedusers[i],
+													Status: 2
+												};
+
+												$.ajax({
+													type: "POST",
+													url: sessionStorage.getItem("BaseUrl") + "api/Message",
+													contentType: "application/json; charset=utf-8",
+													dataType: "json",
+													data: JSON.stringify(message),
+													success: function (data) {
+														if (data == 'true') {
+														}
+													}
+												});
+											});
+										}
+										if (selectedusers.length > 0) {
+											$("#shareNote-container").toggle(200);
+											setTimeout(showShareToast, 1000);
+										}
+									}
+
+									function showShareToast() {
+										$('#noteShare-toast').toast('show');
+									};
+								</script>
+							</div>
+						</div>
+					</div>
+					<!--TOAST TO SHOW AFTER SAVE NOTE-->
+					<div class="toast" id="noteShare-toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-delay="4000">
+						<div class="toast-header">
+							<strong class="mr-auto">Deling</strong>
+							<small class="text-muted"></small>
+							<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="toast-body"><i class="far fa-check-circle" style="margin-right: 5px; color: forestgreen;"></i>Succes!<br />Notaterne er blevet delt.</div>
+					</div>
+				</div>
+
+			</div>
+
+
+
+			<!--CALENDAR-->
+			<div class="dashboard-card calendar">
+				<h3 class="dashboard-card-header">Kalender</h3>
+				<div class="dashboard-card-content">
+
+					<div class="calendar-date date1">
+						<div class="date-number">23</div>
+						<div class="weekday">Mandag</div>
+						<div class="month-year">September 2019</div>
+					</div>
+					<a href="#" class="appointment1"><span class="calendar-time">10:00</span> Opfølgningsaftale - Vita Jensen</a>
+					<a href="#" class="appointment2"><span class="calendar-time">12:30</span> Lægebesøg - Svend Hansen</a>
+
+					<div class="calendar-date date2">
+						<div class="date-number">24</div>
+						<div class="weekday">Tirsdag</div>
+						<div class="month-year">September 2019</div>
+					</div>
+					<a href="#" class="appointment3"><span class="calendar-time">08:00</span> Lægebesøg - Gerda Sørensen</a>
+					<a href="#" class="appointment4"><span class="calendar-time">09:15</span> Planlægge Delmål/fokusområde - Gerda Sørensen</a>
+					<a href="#" class="appointment5"><span class="calendar-time">13:45</span> Evaluering og score - Vita Jensen</a>
+
+					<div class="calendar-date date3">
+						<div class="date-number">25</div>
+						<div class="weekday">Onsdag</div>
+						<div class="month-year">September 2019</div>
+					</div>
+					<a href="#" class="appointment6"><span class="calendar-time">Hele dagen</span> Sølund festival - Poul Knudsen, Vita Jensen og Gerda Sørensen</a>
+
+					<div class="calendar-date date4">
+						<div class="date-number">26</div>
+						<div class="weekday">Torsdag</div>
+						<div class="month-year">September 2019</div>
+					</div>
+					<a href="#" class="appointment7"><span class="calendar-time">14:00</span> Evaluering og score - Poul Knudsen</a>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!--SAMPLE DATA FOR COMBOBOX-->
+	<script type="text/javascript">
+
+		var SampleJSONData = [
+			{
+				id: 'Afføring',
+				title: 'Afføring'
+			}, {
+				id: 'Afgørelse',
+				title: 'Afgørelse'
+			}, {
+				id: 'Afklaring',
+				title: 'Afklaring'
+			}, {
+				id: 'Aftale',
+				title: 'Aftale'
+			}, {
+				id: 'Angstanfald',
+				title: 'Angstanfald'
+			}, {
+				id: 'Behandler',
+				title: 'Behandler'
+			}, {
+				id: 'Besøg',
+				title: 'Besøg'
+			}, {
+				id: 'Budget',
+				title: 'Budget'
+			}, {
+				id: 'Dagbog',
+				title: 'Dagbog'
+			}, {
+				id: 'Døgnrytme',
+				title: 'Døgnrytme'
+			}, {
+				id: 'Familie',
+				title: 'Familie'
+			}, {
+				id: 'Ferie',
+				title: 'Ferie'
+			}, {
+				id: 'Flytning',
+				title: 'Flytning'
+			}, {
+				id: 'Fritid',
+				title: 'Fritid'
+			}, {
+				id: 'Hygiejne',
+				title: 'Hygiejne'
+			}, {
+				id: 'Kost',
+				title: 'Kost'
+			}, {
+				id: 'Medicin',
+				title: 'Medicin'
+			}, {
+				id: 'Misbrug',
+				title: 'Misbrug'
+			}, {
+				id: 'Motion',
+				title: 'Motion'
+			}, {
+				id: 'Motorik',
+				title: 'Motorik'
+			}, {
+				id: 'Opfølgning',
+				title: 'Opfølgning'
+			}, {
+				id: 'Partshøring',
+				title: 'Partshøring'
+			}, {
+				id: 'Risikoobservation',
+				title: 'Risikoobservation'
+			}, {
+				id: 'Samtykke',
+				title: 'Samtykke'
+			}, {
+				id: 'Skole',
+				title: 'Skole'
+			}, {
+				id: 'Tandlæge',
+				title: 'Tandlæge'
+			}, {
+				id: 'Trivsel',
+				title: 'Trivsel'
+			}, {
+				id: 'Træning',
+				title: 'Træning'
+			}, {
+				id: 'Værge',
+				title: 'Værge'
+			}, {
+				id: 'Økonomi',
+				title: 'Økonomi'
+			}, {
+			    id: 'Notat1',
+			    title: 'Notat1'
+			}, {
+			    id: 'Notat2',
+			    title: 'Notat2'
+			}
+		];
+		var comboTree1;
+
+
+		jQuery(document).ready(function ($) {
+
+			window.comboTree1 = $('#Search_NoteHeadline').comboTree({
+				source: SampleJSONData,
+				isMultiple: true
+			});
+
+		});
+
+		function GetObjectId(array, value) {
+			for (var i = 0; i < array.length; i++) {
+				if (array[i].title == value) {
+					return array[i].id;
+				}
+			}
+		};
+
+	</script>
+</body>
+
+</html>

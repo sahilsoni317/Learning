@@ -1,0 +1,83 @@
+nav {
+	position: fixed;
+	top: 50px;
+	bottom: 0;
+	left: 0;
+	width: 60px;
+	background-color: #03082e;
+	font-size: 1rem;
+}
+
+.menu-item {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 36px 15px;
+	color: #fff;
+	text-align: center;
+	text-decoration: none;
+	border-radius: 4px;
+	width: 90%;
+	margin: 0 auto 15px auto;
+}
+
+	.menu-item div {
+		font-size: .6rem;
+		line-height: 15px;
+		background-size: 26px auto;
+		background-position: center;
+		background-repeat: no-repeat;
+		align-self: center;
+	}
+
+	.menu-item div svg {
+		font-size: 1.7rem;
+	}
+
+	.menu-item:hover {
+		background-color: rgba(255, 255, 255, 0.25);
+		color: #fff;
+	}
+
+/*.menu-item-overblik {
+	background: url("../images/dashboard.svg");
+}
+
+.menu-item-search {
+	background: url("../images/search.svg");
+}
+
+.menu-item-citizen {
+	background: url("../images/user.svg");
+}
+
+.menu-item-medicin{
+     background: url("../images/medicin.svg"); }
+
+.menu-item-setting {
+	background: url("../images/setting.svg");
+}*/
+
+/*----Tab icons----*/
+
+.tabs-icons {
+    padding: 0px 9px;
+    margin-right: 5px;
+}
+
+.tab-icon1 {
+    background: url("../images/medicin-black.svg");
+    background-repeat: no-repeat;
+}
+
+ul.bottom-nav-icons {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    text-align: center;
+}
+
+ul.bottom-nav-icons li{
+    text-align: center;
+    border-radius: 4px;
+    color:#fff;
+}

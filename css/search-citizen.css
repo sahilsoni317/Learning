@@ -1,0 +1,81 @@
+.search-citizen-field {
+	min-width: 250px;
+	border: solid 1px #a1a1a1;
+	border-radius: 4px;
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+	padding: 8px;
+}
+
+.search-btn {
+	padding: 8px;
+	min-width: 80px;
+	border-radius: 4px;
+	margin-bottom: 20px;
+
+	box-shadow: none;
+    border: solid 1px rgba(3, 8, 46, .25);
+    color: rgb(3, 8, 46);
+    background-color: rgba(3, 8, 46, .1);
+}
+
+	.search-btn:hover {
+		cursor: pointer;
+	}
+
+.search-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 25px auto;
+	grid-gap: 10px;
+	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
+	background: #fff;
+	border-radius: 4px;
+	padding: 10px;
+	overflow: hidden;
+}
+
+.search-citizen-list .dashboard-card-content ul li:nth-of-type(2n+1) a {
+	background-color: transparent !important;
+}
+
+	.search-citizen-list .dashboard-card-content ul li:nth-of-type(2n+1) a:hover {
+		background-color: rgb(240, 240, 247) !important;
+	}
+
+.search-citizen-list .dashboard-card-content ul li:nth-of-type(2n+1) {
+	background-color: rgba(0, 0, 0, .025);
+}
+
+.search-citizen-list .dashboard-card-content li {
+	display: grid;
+	grid-template-columns: 30px 1fr;
+	grid-template-rows: 1fr;
+	align-items: center;
+}
+
+	.search-citizen-list .dashboard-card-content li a {
+		display: grid;
+		grid-template-columns: 1fr 1fr 5fr;
+		align-items: center;
+		padding: 10px;
+		background-color: transparent;
+	}
+
+		.search-citizen-list .dashboard-card-content li a:hover {
+			background-color: rgb(240, 240, 247);
+		}
+
+	.search-citizen-list .dashboard-card-content li button {
+		background-color: transparent;
+		border: none;
+		height: 30px;
+		width: 30px;
+		border-radius: 15px;
+		transition: all 100ms linear;
+	}
+	.search-citizen-list .dashboard-card-content li button:hover {
+		color: #0096bb;
+		background-color: rgba(0, 0, 0, .1);
+		
+	}
+

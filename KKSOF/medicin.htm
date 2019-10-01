@@ -1,0 +1,1679 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+	<!--Bootstrap-->
+	<link rel="stylesheet" type="text/css" href="../Content/bootstrap.min.css" />
+	<script src="../Scripts/jquery-3.0.0.min.js"></script>
+	<script src="../Scripts/popper.min.js"></script>
+	<script src="../Scripts/bootstrap.min.js"></script>
+	<script src="../Scripts/jQuery.highlight.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/globalStyle.css">
+	<link rel="stylesheet" type="text/css" href="../css/nav.css">
+	<link rel="stylesheet" type="text/css" href="../css/top-bar.css">
+	<link rel="stylesheet" type="text/css" href="../css/dashboard.css">
+	<link rel="stylesheet" type="text/css" href="../css/citizen-context.css">
+	<link rel="stylesheet" type="text/css" href="../css/search-citizen.css">
+	<link rel="stylesheet" type="text/css" href="../css/citizen-page.css">
+	<link href="../css/div-oneline.css" rel="stylesheet" />
+
+	<!--forHighlight-->
+	<script src="../Scripts/jQuery.highlight.js"></script>
+	<script src="../Scripts/Master.js"></script>
+
+	<script src="../Scripts/all-fontAwesome.js"></script>
+	<!--Scripts for multiselect dropdown box-->
+	<script src="../Scripts/icontains.js"></script>
+	<script src="../Scripts/comboTreePlugin.js"></script>
+	<title>DXC Social</title>
+
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			var guid = GetParameterValues('guid');
+			var citizen = JSON.parse(sessionStorage.getItem(guid));
+			var user = JSON.parse(sessionStorage.getItem("User"));
+			if (citizen == null) {
+				var Overview = document.getElementById('Overblik');
+				var Sog = document.getElementById('Sog');
+				var Borger = document.getElementById('Borger');
+				var Medicin = document.getElementById('Medicin');
+
+				if (user.Usertype == 1) {
+					Overview.setAttribute('href', '../KKSOF/index.htm');
+				} else {
+					Overview.setAttribute('href', '../KKSOF/overview_deliverer.htm');
+				}
+				Sog.setAttribute('href', '../KKSOF/search.htm');
+				Borger.setAttribute('href', '../KKSOF/citizen.htm');
+				Medicin.setAttribute('href', '../KKSOF/medicin.htm');
+				$('#Borger').css("display", "none");
+				$('#Medicin').css("display", "none");
+			}
+			else {
+				var Overview = document.getElementById('Overblik');
+				var Sog = document.getElementById('Sog');
+				var Borger = document.getElementById('Borger');
+				var Medicin = document.getElementById('Medicin');
+
+				if (user.Usertype == 1) {
+					Overview.setAttribute('href', '../KKSOF/index.htm?guid=' + guid + '&');
+				} else {
+					Overview.setAttribute('href', '../KKSOF/overview_deliverer.htm?guid=' + guid + '&');
+				}
+				Sog.setAttribute('href', '../KKSOF/search.htm?guid=' + guid + '&');
+				Borger.setAttribute('href', '../KKSOF/citizen.htm?guid=' + guid + '&');
+				Medicin.setAttribute('href', '../KKSOF/medicin.htm?guid=' + guid + '&');
+				$('#Borger').css("display", "grid");
+				$('#Medicin').css("display", "grid");
+			}
+		});
+	</script>
+
+	<script type="text/javascript">
+		function Formatdate(id, formateDate) {
+			var date = new Date(formateDate);
+			var formattedDate = ("0" + date.getDate()).slice(-2) + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + date.getFullYear() + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+			var dateitem = document.getElementById(id);
+			dateitem.textContent = 'Opdateret: ' + formattedDate;
+		}
+	</script>
+
+	<script type="text/javascript">
+		function GetParameterValues(param) {
+			var url = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+			for (var i = 0; i < url.length; i++) {
+				var urlparam = url[i].split('=');
+				if (urlparam[0] == param) {
+					return urlparam[1];
+				}
+			}
+		}
+	</script>
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			var guid = GetParameterValues('guid');
+			var citizen = JSON.parse(sessionStorage.getItem(guid));
+			var user = JSON.parse(sessionStorage.getItem("User"));
+			$('#Fullname').text(citizen.Firstname + ' ' + citizen.Lastname);
+			$('#CPRNo').text(citizen.PersonalIdNo);
+			$('#Address').text(citizen.Address);
+			$('#City').text(citizen.City);
+			if (citizen != null) {
+				$.ajax({
+					type: "GET",
+					url: sessionStorage.getItem("BaseUrl") + "api/citizenmessages",
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: { CitizenId: guid },
+					success: function (output) {
+						if (output.length < 1) {
+							$('#no-citizen-messages').css('display', 'block');
+						}
+						$('#citizen-overview-messages').empty();
+						$.each(output, function (index, val) {
+							if (user.Usertype == 2 && val.MessageType == 'Statusnotat') {
+								var statusData = GetStatus(1);
+							}
+							else {
+								var statusData = GetStatus(val.Status);
+							}
+							var CreatedDate = new Date(val.Date);
+							var formattedDate = ("0" + CreatedDate.getDate()).slice(-2) + "-" + ("0" + (CreatedDate.getMonth() + 1)).slice(-2) + "-" + CreatedDate.getFullYear();
+							var description = val.Description;
+							var rows = "<li><a href=#>" +
+								"<div class='message-date'>" + formattedDate + "</div>" +
+								"<div class='status'>" + statusData + "</div>" +
+								"<div class='message'>" + description + "</div>" +
+								"</a> </li> ";
+							$('#citizen-overview-messages').append(rows);
+						});
+						$('#Load_Message').css('display', 'none');
+						$('#citizen-overview-messages').css('display', 'inline');
+						filterMessagedata();
+					}
+				});
+            }
+
+            $('#formnotesearch').submit(function () {
+                filterdata();
+                return false;
+            });
+            $('#formmessagesearch').submit(function () {
+                filterMessagedata();
+                return false;
+            });           
+
+		});
+	</script>
+
+	<!--citizen-deadline-->
+	<script type="text/javascript">
+		$(document).ready(function () {
+			var guid = GetParameterValues('guid');
+			var citizen = JSON.parse(sessionStorage.getItem(guid));
+			if (citizen != null) {
+				$.ajax({
+					type: "GET",
+					url: sessionStorage.getItem("BaseUrl") + "api/citizendeadline",
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: { CitizenId: guid },
+					success: function (output) {
+						if (output.length < 1) {
+							$('#no-citizen-deadlines').css('display', 'block');
+						}
+						$('#citizen-overview-deadlines').empty();
+						$.each(output, function (index, val) {
+							var DeadlineColorEnum = val.Deadlinecolor;
+							var DeadlineDate = new Date(val.DeadlineDate);
+							var formattedDate = ("0" + DeadlineDate.getDate()).slice(-2) + "-" + ("0" + (DeadlineDate.getMonth() + 1)).slice(-2) + "-" + DeadlineDate.getFullYear();
+							var Title = val.DeadlineTitle;
+							var Fullname = val.CitizenfirstName + ' ' + val.CitizenLastName;
+							var PersonalId = val.PersonalId;
+							var DeadlineType = GetDeadlineType(val.Deadlinetype);
+							var User = val.UserName;
+
+							var rows = "<li><a href=#>" +
+								"<div  class='deadline-date'>" + formattedDate + "</div>" +
+								"<div target=" + DeadlineColorEnum + " class='deadline-color'></div>" +
+								"<div class='deadline-txt'>" + Title + "</div>" +
+								"</a> </li> ";
+
+							var filteredrows = "<li><a href=#>" +
+								"<div class='deadline-date'>" + formattedDate + "</div>" +
+								"<div target=" + DeadlineColorEnum + " class='deadline-color'></div>" +
+								"<div class='deadline-citizenName'>" + Fullname + "</div>" +
+								"<div class='deadline-citizenCPR'>" + PersonalId + "</div>" +
+								"<div class='deadline-type'>" + DeadlineType + "</div>" +
+								"<div class='deadline-responsible'>" + User + "</div>" +
+								"<div class='deadline-title'>" + Title + "</div>" +
+								"</a> <button class='btn-completeDeadline'>Udfør frist</button> </li> ";
+
+							if (index < 3) {
+								$('#citizen-overview-deadlines').append(rows);
+							}
+							$('#AllCitizendeadlines').append(filteredrows);
+						});
+						$('#Load_Deadline').css('display', 'none');
+						$('#citizen-overview-deadlines').css('display', 'inline');
+					}
+				});
+			}
+
+		});
+	</script>
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			GetCitizenDocument();
+		});
+
+		function GetCitizenDocument() {
+			var guid = GetParameterValues('guid');
+			var citizen = JSON.parse(sessionStorage.getItem(guid));
+			if (citizen != null) {
+				$.ajax({
+					type: "GET",
+					url: sessionStorage.getItem("BaseUrl") + "api/citizendocuments",
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: { CitizenId: guid },
+					success: function (output) {
+						if (output.length < 1) {
+							$('#no-citizen-notes').css('display', 'block');
+						}
+						$('#citizen-overview-notes').empty();
+						$.each(output, function (index, val) {
+							var Description = truncate(val.Description);
+							var CreatedDate = new Date(val.Date);
+							var formattedDate = ("0" + CreatedDate.getDate()).slice(-2) + "-" + ("0" + (CreatedDate.getMonth() + 1)).slice(-2) + "-" + CreatedDate.getFullYear();
+							var DocType = GetNote(val.DocType);
+							var DocName = truncate(val.DocName);
+							var rows = "<li><a href='#' data-toggle='modal' data-target='#createNoteModal'  onclick='OpenNote(" + JSON.stringify(val) + ")'>" +
+								"<div  class='note-col' target=" + val.DocType + "></div>" +
+								"<div class='note-date'>" + formattedDate + "</div>" +
+								"<div class='note-type'>" + DocType + "</div>" +
+								"<div class='note-header'>" + DocName.replace(/,/g, ', ') + "</div>" +
+								"<div class='note-txt'>" + Description + "</div>" +
+								"</a> </li> ";
+
+							if (index < 3) {
+								$('#citizen-overview-notes').append(rows);
+							}
+
+						});
+						$('#Load_Notes').css('display', 'none');
+						$('#citizen-overview-notes').css('display', 'inline');
+						filterdata();
+					}
+				});
+			}
+		}
+	</script>
+
+
+
+	<script>
+		function OpenNote(param) {
+			var Note_Createddate = document.getElementById("Note_Createddate");
+			var Note_Type = document.getElementById("Note_Type");
+			var Note_CreatedBy = document.getElementById("Note_CreatedBy");
+			var Note_Profession = document.getElementById("Note_Profession");
+			var Note_Headline = document.getElementById("Note_Headline");
+			var Note_Text = document.getElementById("Note_Text");
+			document.getElementById("Note_Id").value = param.Guid;
+
+			$.when($.ajax({
+				type: "GET",
+				url: sessionStorage.getItem("BaseUrl") + "api/Document/" + param.Guid,
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (output) {
+					var date = new Date(output.CreatedDate);
+					var formattedDate = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2) + "T" + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+					Note_Createddate.value = formattedDate;
+					if (output.NoteType == 1) {
+						Note_Type.selectedIndex = 1;
+					} else if (output.NoteType == 2) {
+						Note_Type.selectedIndex = 2;
+					} else if (output.NoteType == 3) {
+						Note_Type.selectedIndex = 3;
+					} else if (output.NoteType == 4) {
+						Note_Type.selectedIndex = 4;
+					} else if (output.NoteType == 5) {
+						Note_Type.selectedIndex = 5;
+					} else if (output.NoteType == 6) {
+					    Note_Type.selectedIndex = 6;
+					} else if (output.NoteType == 7) {
+					    Note_Type.selectedIndex = 7;
+					} else if (output.NoteType == 8) {
+					    Note_Type.selectedIndex = 8;
+					}
+					GetNoteHeadlines(output.Noteheadline);
+					Note_Text.value = output.NoteText;
+					Note_CreatedBy.value = output.FullName + ' (' + output.Username + ')';
+					Note_Profession.value = output.Profession;
+				}
+			})).done(function (output) {
+			    OnchangeNoteType();
+			});
+		}
+
+		function GetNote(NoteType) {
+			if (NoteType == 1) {
+				return 'Tegn';
+			} else if (NoteType == 2) {
+				return 'Statusnotat';
+			} else if (NoteType == 3) {
+				return 'Medicin';
+			} else if (NoteType == 4) {
+				return 'Lægenotat';
+			} else if (NoteType == 5) {
+				return 'Hospital (Ind/Ud)';
+			} else if (NoteType == 6) {
+				return 'Personlige aftaler';
+			} else if (NoteType == 7) {
+				return 'Hændelse';
+			} else if (NoteType == 8) {
+				return 'Privatøkonomi';
+			}
+		}
+
+		function GetDeadlineType(Type) {
+			if (Type == 1) {
+				return 'Opfølgningsfrist';
+			} else if (Type == 2) {
+				return 'Sagsbehandlingsfrist';
+			} else if (Type == 3) {
+				return 'Kvitteringsfrist';
+			} else if (Type == 4) {
+				return 'Parthøringsfrist';
+			} else if (Type == 5) {
+				return 'Klagefrist';
+			}
+		};
+
+
+		function GetStatus(StatusType) {
+			if (StatusType == 1) {
+				return 'Sendt';
+			} else if (StatusType == 2) {
+				return 'Modtaget';
+			} else if (StatusType == 3) {
+				return 'Done';
+			}
+		};
+
+		function truncateNoteText(input) {
+			if (input.length > 50)
+				return input.substring(0, 50) + '...';
+			else
+				return input;
+		};
+
+		function GetNoteHeadlines(headlines) {
+			var headlinesArrray = headlines.split(',');
+			window.comboTree1.ClearItems();
+			for (var i = 0; i < headlinesArrray.length; i++) {
+				window.comboTree1.SelectItems(GetObjectId(SampleJSONData, headlinesArrray[i]));
+			}
+		}
+
+
+		function getBlankNoteModel() {		    
+			var user = JSON.parse(sessionStorage.getItem("User"));
+			document.getElementById("Note_Type").selectedIndex = 0;
+			OnchangeNoteType();
+			document.getElementById("Note_CreatedBy").value = user.Firstname + ' ' + user.Lastname + ' (' + user.UserName + ')';
+			document.getElementById("Note_Profession").value = user.Profession;
+			window.comboTree1.ClearItems();
+			document.getElementById("Note_Text").value = '';
+			var today = new Date();
+			var formatdate = today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-" + ("0" + today.getDate()).slice(-2) + "T" + ("0" + today.getHours()).slice(-2) + ":" + ("0" + today.getMinutes()).slice(-2);
+			$('#Note_Createddate').val(formatdate);
+		}
+
+		function getNoteModelForSearch() {
+			//comboTree2.ClearItems();
+		}
+
+		function ClearSearch() {
+			// comboTree2.ClearItems();
+		}
+	</script>
+
+	<script>
+		function filterdata() {
+			var Search_Note_Type = $('#Search_Note_Type').children("option:selected").index();
+			var Search_NoteHeadline = $('#Search_NoteHeadline').val();
+			var Search_NoteText = $('#Search_NoteText').val();
+			var Search_fromDate = $('#Search_fromDate').val();
+			var Search_ToDate = $('#Search_ToDate').val();
+			var Search_CreatedBy = $('#Search_CreatedBy').children("option:selected").val();
+			var CitizenGuid = GetParameterValues('guid');
+
+			var documentData = {
+				Fromdate: Search_fromDate,
+				Todate: Search_ToDate,
+				DocType: Search_Note_Type,
+				Name: Search_NoteHeadline,
+				UserId: Search_CreatedBy,
+				NoteText: Search_NoteText,
+				CitizenId: CitizenGuid
+			};
+
+			$.ajax({
+				type: "POST",
+				url: sessionStorage.getItem("BaseUrl") + "api/FilterCitizenDocuments",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				data: JSON.stringify(documentData),
+				success: function (data) {
+					$('#showallNotesData').empty();
+					$.each(data, function (index, val) {
+						var Notedate = new Date(val.Createdtimestamp);
+						var formattedNoteDate = ("0" + Notedate.getDate()).slice(-2) + "-" + ("0" + (Notedate.getMonth() + 1)).slice(-2) + "-" + Notedate.getFullYear();
+						var NoteHeadline = truncate(val.Name);
+						var Notetype = GetNote(val.DocumentType);
+						var Notetext = val.Description;
+						var Username = val.UserFirstName + ' ' + val.UserLastName + ' (' + val.UserId + ')';
+
+						varFilterrows = "<div class='showallNotes-row'>" +
+							"<div class='noteColor' target=" + val.DocumentType + "></div>" +
+							"<div class='showallNotes-columnContent'>" +
+							" <div><input class='inputCheckboxes' type='checkbox' name='name' value='" + formattedNoteDate + '&;' + Notetype + '&;' + truncateNoteText(Notetext) + '&;' + val.CitizenId + "' /></div> " +
+							"<div class='columnContent-date'>" + formattedNoteDate + "</div>" +
+							"<div class='columnContent-noteType'>" + Notetype + "</div>" +
+							"<div class='columnContent-noteHeaders'>" + NoteHeadline.replace(/,/g, ', ') + "</div>" +
+							"<div class='columnContent-'>" + Username + "</div>" +
+							"</div>" +
+							"<div class='showallNotes-noteContent'>" + Notetext + "</div>" +
+							"</div>";
+						$('#showallNotesData').append(varFilterrows);
+					});
+					if (Search_NoteText != null && Search_NoteText != '') {
+						$('.columnContent-date').highlight(Search_NoteText);
+						$('.columnContent-noteType').highlight(Search_NoteText);
+						$('.columnContent-noteHeaders').highlight(Search_NoteText);
+						$('.columnContent-').highlight(Search_NoteText);
+						$('.showallNotes-noteContent').highlight(Search_NoteText);
+					}
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+
+		}
+	</script>
+
+
+	<script>
+		function filterMessagedata() {
+			var Search_message_type = $('#Search_message_type').children("option:selected").val();
+			var Search_message_status = $('#Search_message_status').children("option:selected").val();
+			var Search_message_Text = $('#Search_message_Text').val();
+			var Search_message_fromDate = $('#Search_message_fromDate').val();
+			var Search_message_ToDate = $('#Search_message_ToDate').val();
+			var CitizenGuid = GetParameterValues('guid');
+			var user = JSON.parse(sessionStorage.getItem("User"));
+			var messageData = {
+				Fromdate: Search_message_fromDate,
+				Todate: Search_message_ToDate,
+				type: Search_message_type,
+				messageStatus: Search_message_status,
+				text: Search_message_Text,
+				CitizenId: CitizenGuid
+			};
+
+			$.ajax({
+				type: "POST",
+				url: sessionStorage.getItem("BaseUrl") + "api/FilterCitizenMessages",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				data: JSON.stringify(messageData),
+				success: function (data) {
+					$('#AllmessagesModel').empty();
+					$.each(data, function (index, val) {
+						var MessageType = val.MessageType;
+						var Messagedate = new Date(val.Createdtimestamp);
+						var formattedMessageDate = ("0" + Messagedate.getDate()).slice(-2) + "-" + ("0" + (Messagedate.getMonth() + 1)).slice(-2) + "-" + Messagedate.getFullYear();
+						var MessageStatus = val.MessageStatus;
+						if (user.Usertype == 2 && val.MessageType == 'Statusnotat') {
+							var status = GetStatus(1);
+						}
+						else {
+							var status = GetStatus(val.Status);
+						}
+						var description = val.Description;
+						if (val.UserId == null)
+							var Recipient = "";
+						else {
+							var Recipient = val.UserFirstName + ' ' + val.UserLastName + ' (' + val.UserId + ')';
+						}
+
+						var filteredrows = "<li><a href=#>" +
+							"<div  class=\"message-date filter-message-date\">" + formattedMessageDate + "</div>" +
+							"<div class=\"message-status filter-message-status\">" + status + "</div>" +
+							"<div  class=\"message-type filter-message-type\">" + MessageType + "</div>" +
+							"<div  class=\"message-messageStatus filter-message-messageStatus\">" + MessageStatus + "</div>" +
+							"<div  class=\"message-recipient filter-message-recipient\">" + Recipient + "</div>" +
+							"<div  class=\"message-description filter-message-description\">" + description + "</div>" +
+							"</a> </li> ";
+						$('#AllmessagesModel').append(filteredrows);
+					});
+					if (Search_message_Text != null && Search_message_Text != '') {
+						$('.filter-message-date').highlight(Search_message_Text);
+						$('.filter-message-status').highlight(Search_message_Text);
+						$('.filter-message-type').highlight(Search_message_Text);
+						$('.filter-message-messageStatus').highlight(Search_message_Text);
+						$('.filter-message-recipient').highlight(Search_message_Text);
+						$('.filter-message-description').highlight(Search_message_Text);
+					}
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+
+		}
+
+		function clearMessagefilter() {
+		}
+	</script>
+
+
+	<script>
+		function OnchangeNoteType() {
+			var noteType = $('#Note_Type').children("option:selected").index();
+
+			if (noteType == 1) {
+				$('#Note_Type').css('border-left', 'solid 5px #7DFF00');
+			} else if (noteType == 2) {
+				$('#Note_Type').css('border-left', 'solid 5px #FAFA32');
+			} else if (noteType == 3) {
+				$('#Note_Type').css('border-left', 'solid 5px #80FFFF');
+			} else if (noteType == 4) {
+				$('#Note_Type').css('border-left', 'solid 5px #80CFFF');
+			} else if (noteType == 5) {
+				$('#Note_Type').css('border-left', 'solid 5px #009BFF');
+			} else if (noteType == 6) {
+				$('#Note_Type').css('border-left', 'solid 5px #FFB300');
+			} else if (noteType == 7) {
+				$('#Note_Type').css('border-left', 'solid 5px #FF00FF');
+			} else if (noteType == 8) {
+				$('#Note_Type').css('border-left', 'solid 5px #966432');
+			} else {
+				$('#Note_Type').css('border-left', '');
+			}
+		}
+	</script>
+
+
+
+
+
+</head>
+
+<body>
+
+	<div class="top-bar">
+		<div class="logo-vitae">VITAE</div>
+		<div class="time-stamp">
+			<div id="current-date"></div>
+			<div id="current-month-year"></div>
+			<div id="current-day"></div>
+		</div>
+
+		<div class="btn-group" style="float: right;">
+			<a href="#" class="user-container" id="dropdownUser" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<div id="divUser" class="user-name"></div>
+				<div id="divRole" class="user-role"></div>
+				<i class="fas fa-chevron-down"></i>
+			</a>
+			<div class="dropdown-menu" aria-labelledby="dropdownUser">
+				<a class="dropdown-item" href="#"><i class="fas fa-user" style="margin-right: 10px;"></i>Profil</a>
+				<div class="dropdown-divider"></div>
+				<h6 class="dropdown-header">Skærmtilstand</h6>
+				<a class="dropdown-item" href="#">Normal tilstand</a>
+				<a class="dropdown-item" href="#">Høj kontrast</a>
+				<a class="dropdown-item" href="#">Nattetilstand</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" onclick="Logout()" href="#"><i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>Log ud</a>
+			</div>
+            <script>
+                function Logout() {
+                    sessionStorage.clear();
+                    localStorage.removeItem('UserKey');
+                    var window1 = window.location.replace('../KKSOF/login.html');
+
+                }
+            </script>
+
+		</div>
+
+		<!-- Plus Dropdown-->
+		<!--<div class="dropdown">
+			<a href="#" id="plusDropdown" class="btn-plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="0,1"></a>
+			<div class="dropdown-menu" aria-labelledby="plusDropdown">
+				<h6 class="dropdown-header">Opret</h6>
+				<a class="dropdown-item dropdown-item-note" href="#"><i class="far fa-sticky-note"></i><div>Notat</div></a>
+				<a class="dropdown-item dropdown-item-message" href="#"><i class="far fa-envelope"></i><div>Besked</div></a>
+				<a class="dropdown-item dropdown-item-deadline" href="#"><i class="far fa-bell"></i><div>Frist</div></a>
+			</div>
+		</div>-->
+	</div>
+
+	<nav>
+		<a id="Overblik" class="menu-item">
+			<div class="menu-item-overblik"><i class="fas fa-tachometer-alt"></i></div>
+			<div>Overblik</div>
+		</a>
+		<a id="Sog" class="menu-item">
+			<div class="menu-item-search"><i class="fas fa-search"></i></div>
+			<div>Søg</div>
+		</a>
+		<a id="Borger" class="menu-item">
+			<div class="menu-item-citizen"><i class="fas fa-user-circle"></i></div>
+			<div>Borger</div>
+		</a>
+		<!--<a id="Medicin" class="menu-item">
+			<div class="menu-item-medicin"><i class="fas fa-first-aid"></i></div>
+			<div>Medicin</div>
+		</a>-->
+
+		<ul class="bottom-nav-icons">
+			<li>
+				<a id="hide-citizen" class="menu-item" href="#" onclick="$('#hideCitizen-overlay').fadeToggle()">
+					<div class="menu-item-session"><i class="fas fa-user-shield"></i></div>
+					<div>Skjul borger</div>
+				</a>
+			</li>
+			<li>
+				<a id="setting" class="menu-item" href="#">
+					<div class="menu-item-setting"><i class="fas fa-cog"></i></div>
+					<div>Indstillinger</div>
+				</a>
+			</li>
+		</ul>
+	</nav>
+
+	<!--HIDE CITIZEN OVERLAY-->
+	<div id="hideCitizen-overlay">
+		<i class="fas fa-user-shield"></i>
+	</div>
+
+
+	<div class="citizen-context">
+		<div class="context-citizen-name">
+			<img src="../images/icon-citizen.svg" class="context-icon icon-citizen" />
+			<div id="Fullname"></div>
+			<div id="CPRNo"></div>
+		</div>
+
+		<div class="context-citizen-address">
+			<img src="../images/icon-pin.svg" class="context-icon icon-address" />
+			<div id="Address"></div>
+			<div id="City"></div>
+		</div>
+		<div class="risk-container">Risiko</div>
+
+		<div class="cave-contagion-container">
+			<div class="cave-info">CAVE</div>
+			<div class="contagion-info">Smitte</div>
+		</div>
+
+		<a id="CloseCitizen" href="#" data-toggle="tooltip" data-placement="bottom" title="Luk borger"><i class="fas fa-times"></i></a>
+
+		<script>
+			$('#CloseCitizen').click(function () {
+				var guid = GetParameterValues('guid')
+				sessionStorage.removeItem(guid);
+				$(this).prop('href', '../KKSOF/search.htm');
+			});
+
+
+			$(document).ready(function () {
+				$('[data-toggle="tooltip"]').tooltip();
+			});
+		</script>
+
+	</div>
+
+	<div class="tabset">
+		<button class="tablinks" onclick="openTab(event, 'Overblik')"><span class="tabs-icons tab-icon1"></span>Overblik</button>
+		<button class="tablinks" onclick="openTab(event, 'Administration')"><span class="tabs-icons tab-icon1"></span> Administration</button>
+		<button class="tablinks" onclick="openTab(event, 'FMK')"><span class="tabs-icons tab-icon1"></span> FMK</button>
+		<button class="tablinks" onclick="openTab(event, 'Registreringer')"><span class="tabs-icons tab-icon1"></span> Registreringer</button>
+	</div>
+
+	<div class="content-wrapper citizen-content-wrapper">
+
+		<div class="tab-content-wrapper">
+			<!-- Tab content -->
+			<div id="Overblik" class="tabcontent">
+				<div class="card">
+					<div class="card-header">
+						<h3>Livshistorie</h3>
+						<div id="Livshistorie-lastupdated" class="last-updated"></div>
+					</div>
+					<p id="livshistorie-content" contenteditable="false"></p>
+					<a id="livshistorie-edit-btn" href="#/" class="card-content-edit" onclick="editContent('Livshistorie-lastupdated', 'livshistorie-edit-btn', 'livshistorie-content');">Rediger</a>
+				</div>
+				<div class="card">
+					<div class="card-header">
+						<h3>Sygdomshistorie</h3>
+						<div id="sygdomshistorie-lastupdated" class="last-updated"></div>
+					</div>
+					<p id="sygdomshistorie-content" contenteditable="false"></p>
+					<a id="sygdomshistorie-edit-btn" href="#/" class="card-content-edit" onclick="editContent('sygdomshistorie-lastupdated', 'sygdomshistorie-edit-btn', 'sygdomshistorie-content');">Rediger</a>
+				</div>
+				<div class="card">
+					<div class="card-header">
+						<h3>Sundhedsoplysninger</h3>
+						<div id="Sundhedsoplysninger-lastupdated" class="last-updated"></div>
+					</div>
+					<p id="Sundhedsoplysninger-content" contenteditable="false"></p>
+					<a id="Sundhedsoplysninger-edit-btn" href="#/" class="card-content-edit" onclick="editContent('Sundhedsoplysninger-lastupdated', 'Sundhedsoplysninger-edit-btn', 'Sundhedsoplysninger-content');">Rediger</a>
+				</div>
+				<div class="card">
+					<div class="card-header">
+						<h3>Skoleoplysninger</h3>
+						<div id="Skoleoplysninger-lastupdated" class="last-updated"></div>
+					</div>
+					<p id="Skoleoplysninger-content" contenteditable="false"></p>
+					<a id="Skoleoplysninger-edit-btn" href="#/" class="card-content-edit" onclick="editContent('Skoleoplysninger-lastupdated', 'Skoleoplysninger-edit-btn', 'Skoleoplysninger-content');">Rediger</a>
+				</div>
+				<div class="card">
+					<div class="card-header">
+						<h3>Socialfaglige oplysninger</h3>
+						<div id="Socialfaglige-lastupdated" class="last-updated"></div>
+					</div>
+					<p id="Socialfaglige-content" contenteditable="false"></p>
+					<a id="Socialfaglige-edit-btn" href="#/" class="card-content-edit" onclick="editContent('Socialfaglige-lastupdated', 'Socialfaglige-edit-btn', 'Socialfaglige-content');">Rediger</a>
+				</div>
+			</div>
+
+			<div id="Administration" class="tabcontent">
+				<h3>Administration</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3><h3>Henvendelse</h3>
+			</div>
+
+			<div id="FMK" class="tabcontent">
+				<h3>FMK</h3>
+			</div>
+
+			<div id="Registreringer" class="tabcontent">
+				<div class="actionPlan-followUp">Du mangler at følge op på.......</div>
+
+				<div>
+					Indsats
+					<div>Indsatsmål</div>
+				</div>
+			</div>
+		</div><!-- end of tab content -->
+
+		<div class="citizen-overview-wrapper">
+
+			<!--MESSAGES-->
+			<h4>Beskeder</h4>
+			<div id="Load_Message" class="la-ball-pulse"><div></div><div></div><div></div></div>
+			<ul id="citizen-overview-messages" style="display:none"></ul>
+			<div class="no-content-message" id="no-citizen-messages" style="display:none">Ingen beskeder</div>
+			<div class="citizen-overview-linkContainer">
+				<a href="#" class="citizen-overview-showALL-link" data-toggle="modal" data-target="#messagesModal"><i class="fas fa-expand-arrows-alt"></i>Vis alle beskeder</a>
+			</div>
+
+			<!--DEADLINES-->
+			<h4>Frister</h4>
+			<div id="Load_Deadline" class="la-ball-pulse"><div></div><div></div><div></div></div>
+			<ul id="citizen-overview-deadlines" style="display:none"></ul>
+			<div class="no-content-message" id="no-citizen-deadlines" style="display:none">Ingen frister</div>
+			<div class="citizen-overview-linkContainer">
+				<a href="#" class="citizen-overview-showALL-link" data-toggle="modal" data-target="#deadlineModal"><i class="fas fa-expand-arrows-alt"></i>Vis alle frister</a>
+			</div>
+
+			<!--NOTES-->
+			<h4>Notater</h4>
+			<div id="Load_Notes" class="la-ball-pulse"><div></div><div></div><div></div></div>
+			<ul id="citizen-overview-notes" style="display:none"></ul>
+			<div class="no-content-message" id="no-citizen-notes" style="display:none">Ingen notater</div>
+			<div class="citizen-overview-linkContainer">
+				<a href="#" class="citizen-overview-showALL-link" data-toggle="modal" data-target="#createNoteModal" onclick="getBlankNoteModel()"><i class="fas fa-plus"></i>Opret nyt notat</a>
+				<a href="#" class="citizen-overview-showALL-link" data-toggle="modal" data-target="#notesModal" onclick="getNoteModelForSearch()"><i class="fas fa-expand-arrows-alt"></i>Vis alle notater</a>
+			</div>
+
+			<!--ACTIONPLAN OVERVIEW-->
+			<h4>Handleplan overblik</h4>
+			<ul id="citizen-overview-indsatsmaal">
+				<li>
+					<a href="#">
+						<ul>
+							<li class="indsatsmaal">Indsatsmål - Husligt arbejde</li>
+							<li><span class="part-goal">Delmål</span> - Blive bedre til at handle ind.</li>
+							<li><span class="part-goal">Delmål</span> - Skal lære at tage opvasken hver aften.</li>
+							<li><span class="part-goal">Delmål</span> - Støvsugning mindst en gang om ugen.</li>
+						</ul>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<ul>
+							<li class="indsatsmaal">Indsatsmål - Sociale egenskaber</li>
+							<li><span class="part-goal">Delmål</span> - Tage kontakt til sin omgangskreds.</li>
+							<li><span class="part-goal">Delmål</span> - Gå til holdsport en gang om ugen.</li>
+						</ul>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<ul>
+							<li class="indsatsmaal">Indsatsmål - Personlig hygejne</li>
+							<li><span class="part-goal">Delmål</span> - Tage bad mindst 5 gange om ugen</li>
+							<li><span class="part-goal">Delmål</span> - Børste tænder hver morgen og aften</li>
+						</ul>
+					</a>
+				</li>
+			</ul>
+			<a href="#" class="citizen-overview-showALL-link">Vis alle indsatsmål</a>
+
+			<!--CALENDAR-->
+			<h4>Kalender</h4>
+			<div id="citizen-overview-calendar"></div>
+
+		</div>
+	</div>
+
+	<!--Notes modal-->
+	<div class="modal fade notesModal" id="notesModal" tabindex="-1" role="dialog" aria-labelledby="notesModal" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Notater</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="ClearSearch()">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form id="formnotesearch">
+						<div>
+							<label for="type">Type</label>
+							<select id="Search_Note_Type" class="form-control">
+								<option value=""></option>
+								<option value="Tegn">Tegn</option>
+								<option value="Statusnotat">Statusnotat</option>
+								<option value="Medicin">Medicin</option>
+								<option value="Lægenotat">Lægenotat</option>
+								<option value="Hospital (Ind/Ud)">Hospital (Ind/Ud)</option>
+								<option value="Personlige aftaler">Personlige aftaler</option>
+								<option value="Hændelse">Hændelse</option>
+								<option value="Privatøkonomi">Privatøkonomi</option>
+							</select>
+						</div>
+						<div>
+							<label for="header">Overskrift</label>
+							<input id="Search_NoteHeadline" type="text" name="freetext" />
+						</div>
+						<div>
+							<label for="freetext">Fritekst</label>
+							<input id="Search_NoteText" type="text" name="freetext" />
+						</div>
+						<div>
+							<label for="fromDate">Fra</label>
+							<input id="Search_fromDate" type="date" name="fromDate" />
+						</div>
+						<div>
+							<label for="toDate">Til</label>
+							<input id="Search_ToDate" type="date" name="toDate" />
+						</div>
+						<div>
+							<label for="createdBy">Oprettet af</label>
+							<select id="Search_CreatedBy" class="form-control">
+								<option value=""></option>
+							</select>
+						</div>
+						<div class="noteSearchBtnContainer">
+							<input type="submit" name="Submit" value="Søg" class="btn" />
+						</div>
+					</form>
+
+					<div class="showallNotes-table">
+						<div class="showallNotes-columnHeaders">
+							<div>Vælg</div>
+							<div class="columnHeader-date">Dato</div>
+							<div class="columnHeader-noteType">Type</div>
+							<div class="columnHeader-noteHeaders">Overskrifter</div>
+							<div class="columnHeader-">Oprettet af</div>
+						</div>
+						<div id="showallNotesData">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn mr-auto" id="btn-shareNote" onclick="toggleShareNotePopup()"><i class="fas fa-share"></i>Del</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Annuller</button>
+
+					<!-- Share note container -->
+					<div class="share-popup" id="shareNote-container">
+						<div class="shareNote-popup-topBar" onclick="toggleShareNotePopup()">
+							<div>Del notat</div>
+							<span>&times;</span>
+						</div>
+						<h4>Følgende notater deles</h4>
+						<ul class="selected-notes-share" id="SharedNotes"></ul>
+						<h4>Vælg modtagere</h4>
+						<div id="recipient-list">
+							<div class="recipient-row">
+								<div class="col-group">
+									<label>Org. enhed</label>
+									<select>
+										<option value="Org. 1">Org. enhed 1</option>
+										<option value="Org. 2">Org. enhed 2</option>
+										<option value="Org. 3">Org. enhed 3</option>
+										<option value="Org. 4">Org. enhed 4</option>
+									</select>
+								</div>
+								<div class="col-group">
+									<label>Bruger</label>
+									<select class="select_user">
+										<option value=""></option>
+									</select>
+								</div>
+								<div></div> <!--Keep empty-->
+							</div>
+						</div>
+
+						<button type="button" onclick="ShareSelectedNotes()" class="btn"><i class="fas fa-share"></i>Del</button>
+						<button type="button" class="btn" id="add-recipient-Btn"><i class="fas fa-user-plus"></i>Tilføj modtager</button>
+
+					</div><!-- End of share note container -->
+
+					<script>
+						function toggleShareNotePopup() {
+							$("#SharedNotes").empty();
+							$('.inputCheckboxes:checked').each(function () {
+								var noteArray = $(this).attr('value').split('&;');
+								var row = "<li>" +
+									"<div>" + noteArray[0] + "</div>" +
+									"<div>" + noteArray[1] + "</div>" +
+									"<div>" + noteArray[2] + "</div>" +
+									"<div style='display:none'>" + noteArray[3] + "</div>" +
+									"<input class='notes-shared-data' value='" + noteArray[3] + "' type='checkbox' checked style='align-self: center; justify-self: center;' />" +
+									"</li>";
+								$("#SharedNotes").append(row);
+							});
+							$("#shareNote-container").toggle(200);
+						}
+
+						$(function () {
+							$("#add-recipient-Btn").click(function () {
+								$("#recipient-list").append('<div class="recipient-row"><div class="col-group"><label>Org. enhed</label><select><option value="Org. 1">Org. enhed 1</option><option value="Org. 2">Org. enhed 2</option><option value="Org. 3">Org. enhed 3</option></select></div><div class="col-group"><Label>Bruger</Label><select class="select_user"><option value=""></option></select></div><div class="col-group remove-Btn" onclick="$(this).closest(\'.recipient-row\').remove();"><i class="fas fa-trash"></i></div></div>');
+								GetUser();
+							});
+						});
+
+
+
+						function ShareSelectedNotes() {
+
+							var selectedusers = [];
+							$('.select_user').each(function () {
+								var value = $(this).children("option:selected").val();
+								if (value != '')
+									selectedusers.push(value);
+							});
+
+							for (var i = 0; i < selectedusers.length; i++) {
+								$('.notes-shared-data:checked').each(function () {
+
+									var CitizenGuid = $(this).attr('value');
+									var user = JSON.parse(sessionStorage.getItem("User"));
+
+									var message = {
+										Log_UserId: user.GUID,
+										CitizenId: CitizenGuid,
+										Description: "Delt notat",
+										MessageType: "Notat",
+										MessageStatus: "Ubehandlet",
+										recipient: selectedusers[i],
+										Status: 2
+									};
+
+									$.ajax({
+										type: "POST",
+										url: sessionStorage.getItem("BaseUrl") + "api/Message",
+										contentType: "application/json; charset=utf-8",
+										dataType: "json",
+										data: JSON.stringify(message),
+										success: function (data) {
+											if (data == 'true') {
+											}
+										}
+									});
+								});
+							}
+							if (selectedusers.length > 0) {
+								$("#shareNote-container").toggle(200);
+								setTimeout(showShareToast, 1000);
+							}
+						}
+					</script>
+				</div>
+			</div>
+		</div>
+		<!--TOAST TO SHOW AFTER SAVE NOTE-->
+		<div class="toast" id="noteShare-toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-delay="4000">
+			<div class="toast-header">
+				<strong class="mr-auto">Deling</strong>
+				<small class="text-muted"></small>
+				<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="toast-body"><i class="far fa-check-circle" style="margin-right: 5px; color: forestgreen;"></i>Succes!<br />Notaterne er blevet delt.</div>
+		</div>
+	</div>
+
+	<!-- CREATE NOTE MODAL -->
+	<div class="modal fade newNoteModal" id="createNoteModal" tabindex="-1" role="dialog" aria-labelledby="overdueDeadlineModal" aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Opret nyt notat</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/" method="post" autocomplete="off">
+						<div class="form-row">
+							<div class="form-group col">
+								<label>Dato og tid</label>
+								<input id="Note_Createddate" type="datetime-local" name="name" class="form-control" />
+							</div>
+							<div id="Note_Id" style="display:none"></div>
+							<!--<div class="form-group col">
+								<label>Tid</label>
+								<input type="time" name="name" class="form-control" required />
+							</div>-->
+							<div class="form-group col">
+								<label>Type</label>
+								<select id="Note_Type" onchange="OnchangeNoteType()" class="form-control" required>
+									<option value="placeholder"></option>
+                                    <option style="display:none" value="Tegn">Tegn</option>	
+                                    <option style="display:none" value="Statusnotat">Statusnotat</option>								
+									<option value="Medicin">Medicin</option>
+									<option value="Lægenotat">Lægenotat</option>
+									<option value="Hospital (Ind/Ud)">Hospital (Ind/Ud)</option>
+									<option value="Personlige aftaler">Personlige aftaler</option>
+									<option value="Hændelse">Hændelse</option>
+									<option value="Privatøkonomi">Privatøkonomi</option>
+								</select>
+							</div>
+							<div class="form-group col">
+								<label>Oprettet af</label>
+								<input id="Note_CreatedBy" type="text" name="name" class="form-control" readonly />
+							</div>
+							<div class="form-group col">
+								<label>Stilling</label>
+								<input id="Note_Profession" type="text" name="name" class="form-control" readonly />
+							</div>
+						</div>
+						<div class="form-row">
+							<!--<div class="form-group col">
+								<label>Overskrift</label>
+								<input type="text" name="name" class="form-control" />
+							</div>-->
+							<!--<div class=" form-group col dropdown">
+								<label>Overskrift</label>
+								<button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									Dropdown trigger
+								</button>
+								<div class="dropdown-menu" aria-labelledby="dLabel">
+									Type 1<br />
+									Type 2<br />
+									Type 3<br />
+									Type 4<br />
+									Type 5<br />
+									Type 6<br />
+								</div>
+							</div>-->
+							<div class="form-group col">
+								<label>Overskrift</label>
+								<input type="text" class="form-control" id="Note_Headline" placeholder="Vælg overskrift(er)" />
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col">
+								<label>Notat</label>
+								<textarea id="Note_Text" class="form-control autoExpand" rows='1' data-min-rows='1' placeholder="Skriv notat her"></textarea>
+							</div>
+						</div>
+
+						<div class="form-row custom-modal-footer">
+
+							<button type="button" class="btn btn-primary form-control share-note-btn">Del notat</button>
+
+							<div class="save-draft-note-switch">
+								<div class="custom-control custom-switch">
+									<input type="checkbox" class="custom-control-input" id="customSwitch1">
+									<label class="custom-control-label" for="customSwitch1">Kladde</label>
+								</div>
+							</div>
+
+							<button type="button" class="btn btn-secondary form-control cancel-note-btn" data-dismiss="modal">Annuller</button>
+							<button id="saveNote" type="button" class="btn btn-primary form-control save-note-btn" data-dismiss="modal">Gem</button>
+						</div>
+					</form>
+				</div>
+				<!--<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Gem</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Luk</button>
+				</div>-->
+			</div>
+		</div>
+	</div>
+
+	<!--TOAST TO SHOW AFTER SAVE NOTE-->
+	<div class="toast" id="noteSave-toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true" data-delay="4000">
+		<div class="toast-header">
+			<strong class="mr-auto">Notat</strong>
+			<small class="text-muted"></small>
+			<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="toast-body">Notatet er gemt</div>
+	</div>
+
+	<!--Messages modal-->
+	<div class="modal fade messagesModal" id="messagesModal" tabindex="-1" role="dialog" aria-labelledby="messagesModal" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Beskeder</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearMessagefilter()">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+
+					<!--Search form-->
+					<form id="formmessagesearch">
+						<div class="messages-search-type">
+							<label for="">Type</label>
+							<select id="Search_message_type" class="form-control">
+								<option value=""></option>
+								<option value="Notat">Notat</option>
+								<option value="Risikovurdering">Risikovurdering</option>
+								<option value="Meddelelser">Meddelelser</option>
+								<option value="Digital post">Digital post</option>
+								<option value="Kalenderaftaler">Kalenderaftaler</option>
+								<option value="Delmål">Delmål</option>
+								<option value="Statusnotat">Statusnotat</option>
+							</select>
+						</div>
+						<div class="messages-search-messageStatus">
+							<label for="">Status</label>
+							<select id="Search_message_status" class="form-control">
+								<option value=""></option>
+								<option value="ubehandlet">Ubehandlet</option>
+								<option value="igangsat">Igangsat</option>
+								<option value="behandlet">Behandlet</option>
+							</select>
+						</div>
+						<div class="messages-search-fromdate">
+							<label for="fromDate">Fra</label>
+							<input id="Search_message_fromDate" type="date" name="fromDate" />
+						</div>
+						<div class="messages-search-todate">
+							<label for="toDate">Til</label>
+							<input id="Search_message_ToDate" type="date" name="toDate" />
+						</div>
+						<div class="messages-search-freetext">
+							<label for="freetext">Fritekst</label>
+							<input id="Search_message_Text" type="text" name="freetext" />
+						</div>
+						<input type="submit" name="Submit" value="Søg" class="btn form-search-btn" />
+					</form>
+
+					<!--Search grid-->
+					<ul id="AllmessagesModel"></ul>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="clearMessagefilter()">Luk</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--Deadline modal-->
+	<div class="modal fade deadlineModal" id="deadlineModal" tabindex="-1" role="dialog" aria-labelledby="deadlineModal" aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Borgers frister <span style="color: red;">(Only citizen in context deadlines shown here)</span></h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="ClearSearch()">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<!-- Deadline search form -->
+					<form>
+						<div class="deadline-search-type">
+							<label for="">Type</label>
+							<select id="" class="">
+                                <option value=""></option>
+                                <option value="">Opfølgningsfrist</option>
+                                <option value="">Sagsbehandlingsfrist</option>
+                                <option value="">Kvitteringsfrist</option>
+                                <option value="">Parthøringsfrist</option>
+                                <option value="">Klagefrist</option>
+							</select>
+						</div>
+						<div class="">
+							<label for="">Navn eller CPR nummer</label>
+							<input id="" type="text" placeholder="Navn eller CPR nummer" />
+						</div>
+						<div class="">
+							<label for="fromDate">Fra</label>
+							<input id="" type="date" name="fromDate" />
+						</div>
+						<div class="">
+							<label for="toDate">Til</label>
+							<input id="" type="date" name="toDate" />
+						</div>
+						<div class="">
+							<label for="freetext">Fritekst</label>
+							<input id="" type="text" name="freetext" />
+						</div>
+						<div class="">
+							<label for="red">Rød</label>
+							<input id="" type="checkbox" name="red" />
+							<label for="yellow">Gul</label>
+							<input id="" type="checkbox" name="yellow" />
+							<label for="green">Grøn</label>
+							<input id="" type="checkbox" name="green" />
+						</div>
+						<input onclick="" type="button" name="Submit" value="Søg" class="btn form-search-btn" />
+					</form>
+					<ul id="AllCitizendeadlines"></ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Luk</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function showToast() {
+			$('#noteSave-toast').toast('show');
+		};
+
+		function showShareToast() {
+			$('#noteShare-toast').toast('show');
+		};
+
+		function truncate(input) {
+			if (input.length > 30)
+				return input.substring(0, 30) + '...';
+			else
+				return input;
+		};
+	</script>
+
+	<script>
+		$("#saveNote").click(function () {
+			var NoteId = $('#Note_Id').val();
+
+			if (NoteId == null || NoteId == 'undefined' || NoteId == '') {
+				var guid = GetParameterValues('guid');
+				var citizen = JSON.parse(sessionStorage.getItem(guid));
+				var user = JSON.parse(sessionStorage.getItem("User"));
+				var Note_Type = $('#Note_Type').children("option:selected").index();
+				var Note_Headline = window.comboTree1.getSelectedItemsTitle().join();
+				var Note_Text = $.trim($("#Note_Text").val());
+				var Note_Createddate = $('#Note_Createddate').val();
+
+				var document = {
+					Log_UserId: user.GUID,
+					CitizenId: guid,
+					Description: Note_Text,
+					DocumentType: Note_Type,
+					Name: Note_Headline,
+					Createdtimestamp: Note_Createddate
+				};
+
+				$.ajax({
+					type: "POST",
+					url: sessionStorage.getItem("BaseUrl") + "api/Document",
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: JSON.stringify(document),
+					success: function (data) {
+						if (data == 'true') {
+							$('#citizen-overview-notes').html(GetCitizenDocument());
+							setTimeout(showToast, 1000);
+						}
+					}
+				});
+			}
+			else {
+				var Note_Type = $('#Note_Type').children("option:selected").index();
+				var Note_Headline = window.comboTree1.getSelectedItemsTitle().join();
+				var Note_Text = $.trim($("#Note_Text").val());
+				var Note_Createddate = $('#Note_Createddate').val();
+				var user = JSON.parse(sessionStorage.getItem("User"));
+
+				var document = {
+					Description: Note_Text,
+					DocumentType: Note_Type,
+					Name: Note_Headline,
+					Createdtimestamp: Note_Createddate,
+					Log_UserId: user.GUID
+				};
+
+				$.ajax({
+					type: "PUT",
+					url: sessionStorage.getItem("BaseUrl") + "api/Document/" + NoteId,
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: JSON.stringify(document),
+					success: function (data) {
+						if (data == 'true') {
+							$('#citizen-overview-notes').html(GetCitizenDocument());
+							setTimeout(showToast, 1000);
+						}
+					}
+				});
+			}
+		});
+
+	</script>
+
+	<!--SAMPLE DATA FOR COMBOBOX-->
+	<script type="text/javascript">
+
+		var SampleJSONData = [
+			{
+				id: 'Afføring',
+				title: 'Afføring'
+			}, {
+				id: 'Afgørelse',
+				title: 'Afgørelse'
+			}, {
+				id: 'Afklaring',
+				title: 'Afklaring'
+			}, {
+				id: 'Aftale',
+				title: 'Aftale'
+			}, {
+				id: 'Angstanfald',
+				title: 'Angstanfald'
+			}, {
+				id: 'Behandler',
+				title: 'Behandler'
+			}, {
+				id: 'Besøg',
+				title: 'Besøg'
+			}, {
+				id: 'Budget',
+				title: 'Budget'
+			}, {
+				id: 'Dagbog',
+				title: 'Dagbog'
+			}, {
+				id: 'Døgnrytme',
+				title: 'Døgnrytme'
+			}, {
+				id: 'Familie',
+				title: 'Familie'
+			}, {
+				id: 'Ferie',
+				title: 'Ferie'
+			}, {
+				id: 'Flytning',
+				title: 'Flytning'
+			}, {
+				id: 'Fritid',
+				title: 'Fritid'
+			}, {
+				id: 'Hygiejne',
+				title: 'Hygiejne'
+			}, {
+				id: 'Kost',
+				title: 'Kost'
+			}, {
+				id: 'Medicin',
+				title: 'Medicin'
+			}, {
+				id: 'Misbrug',
+				title: 'Misbrug'
+			}, {
+				id: 'Motion',
+				title: 'Motion'
+			}, {
+				id: 'Motorik',
+				title: 'Motorik'
+			}, {
+				id: 'Opfølgning',
+				title: 'Opfølgning'
+			}, {
+				id: 'Partshøring',
+				title: 'Partshøring'
+			}, {
+				id: 'Risikoobservation',
+				title: 'Risikoobservation'
+			}, {
+				id: 'Samtykke',
+				title: 'Samtykke'
+			}, {
+				id: 'Skole',
+				title: 'Skole'
+			}, {
+				id: 'Tandlæge',
+				title: 'Tandlæge'
+			}, {
+				id: 'Trivsel',
+				title: 'Trivsel'
+			}, {
+				id: 'Træning',
+				title: 'Træning'
+			}, {
+				id: 'Værge',
+				title: 'Værge'
+			}, {
+				id: 'Økonomi',
+				title: 'Økonomi'
+			}, {
+			    id: 'Notat1',
+			    title: 'Notat1'
+			}, {
+			    id: 'Notat2',
+			    title: 'Notat2'
+			}
+		];
+		var comboTree1;
+
+
+		jQuery(document).ready(function ($) {
+
+			window.window.comboTree1 = $('#Note_Headline').comboTree({
+				source: SampleJSONData,
+				isMultiple: true
+			});
+
+		});
+
+		function GetObjectId(array, value) {
+			for (var i = 0; i < array.length; i++) {
+				if (array[i].title == value) {
+					return array[i].id;
+				}
+			}
+		};
+
+	</script>
+
+	<!--SAMPLE DATA FOR SEARCH-->
+	<script type="text/javascript">
+
+		var JSONData = [
+			{
+				id: 100,
+				title: 'Afføring'
+			}, {
+				id: 101,
+				title: 'Afgørelse'
+			}, {
+				id: 102,
+				title: 'Afklaring'
+			}, {
+				id: 103,
+				title: 'Aftale'
+			}, {
+				id: 104,
+				title: 'Angstanfald'
+			}, {
+				id: 105,
+				title: 'Behandler'
+			}, {
+				id: 106,
+				title: 'Besøg'
+			}, {
+				id: 107,
+				title: 'Budget'
+			}, {
+				id: 108,
+				title: 'Dagbog'
+			}, {
+				id: 109,
+				title: 'Døgnrytme'
+			}, {
+				id: 110,
+				title: 'Familie'
+			}, {
+				id: 111,
+				title: 'Ferie'
+			}, {
+				id: 112,
+				title: 'Flytning'
+			}, {
+				id: 113,
+				title: 'Fritid'
+			}, {
+				id: 114,
+				title: 'Hygiejne'
+			}, {
+				id: 115,
+				title: 'Kost'
+			}, {
+				id: 116,
+				title: 'Medicin'
+			}, {
+				id: 117,
+				title: 'Misbrug'
+			}, {
+				id: 118,
+				title: 'Motion'
+			}, {
+				id: 119,
+				title: 'Motorik'
+			}, {
+				id: 120,
+				title: 'Opfølgning'
+			}, {
+				id: 121,
+				title: 'Partshøring'
+			}, {
+				id: 122,
+				title: 'Risikoobservation'
+			}, {
+				id: 123,
+				title: 'Samtykke'
+			}, {
+				id: 124,
+				title: 'Skole'
+			}, {
+				id: 125,
+				title: 'Tandlæge'
+			}, {
+				id: 126,
+				title: 'Trivsel'
+			}, {
+				id: 127,
+				title: 'Træning'
+			}, {
+				id: 128,
+				title: 'Værge'
+			}, {
+				id: 129,
+				title: 'Økonomi'
+			}, {
+			    id: 130,
+			    title: 'Notat1'
+			}, {
+			    id: 131,
+			    title: 'Notat2'
+			}
+		];
+		var comboTree2;
+
+
+		jQuery(document).ready(function ($) {
+
+			window.comboTree2 = $('#Search_NoteHeadline').comboTree({
+				source: JSONData,
+				isMultiple: true
+			});
+		});
+
+	</script>
+
+
+
+	<script>
+		function openTab(evt, tabName) {
+			// Declare all variables
+			var i, tabcontent, tablinks;
+
+			// Get all elements with class="tabcontent" and hide them
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+				tabcontent[i].style.display = "none";
+			}
+
+			// Get all elements with class="tablinks" and remove the class "active"
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+
+			// Show the current tab, and add an "active" class to the button that opened the tab
+			document.getElementById(tabName).style.display = "block";
+			evt.currentTarget.className += " active";
+		}
+	</script>
+
+	<script>
+		function editContent(updatedDate, editlink, editcontent) {
+			// Change link text
+			var element = document.getElementById(editlink);
+			if (element.innerHTML === 'Rediger') element.innerHTML = 'Gem';
+			else {
+				element.innerHTML = 'Rediger';
+			}
+
+			// Change attribute
+			var Content = document.getElementById(editcontent);
+			var attributeStatus = Content.getAttribute('contenteditable');
+			if (attributeStatus === 'false') Content.setAttribute('contenteditable', 'true');
+			else {
+				var guid = GetParameterValues('guid');
+				$.ajax({
+					type: "GET",
+					url: sessionStorage.getItem("BaseUrl") + "api/Citizen/updatebackgroundinformation",
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					data: {
+						CitizenId: guid,
+						Key: editcontent,
+						value: Content.textContent
+					},
+					success: function (data) {
+						Formatdate(updatedDate, data);
+					}
+				});
+				Content.setAttribute('contenteditable', 'false');
+			}
+		}
+	</script>
+
+	<script type="text/javascript">
+		function GetUser() {
+			$.ajax({
+				type: "GET",
+				url: sessionStorage.getItem("BaseUrl") + "api/User",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (data) {
+					$.each(data, function (index, val) {
+						var Username = val.UserName;
+						var UserId = val.UserId;
+						var rows = "<option value=" + UserId + ">" + Username + "</option>";
+						$('#Search_CreatedBy').append(rows);
+
+						$('.select_user').append(rows);
+					});
+
+				},
+				failure: function (data) {
+					alert("No data Found");
+				}, //End of AJAX failure function
+				error: function (data) {
+					alert("No data Found");
+				} //End of AJAX error function
+			});
+		}
+
+		$(document).ready(function () {
+			GetUser();
+		});
+	</script>
+
+</body>
+
+</html>
